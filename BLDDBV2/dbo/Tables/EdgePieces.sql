@@ -1,0 +1,5 @@
+﻿CREATE TABLE [dbo].[EdgePieces]
+(
+	[Id] INT NOT NULL PRIMARY KEY IDENTITY, 
+    [Piece] NCHAR(2) NOT NULL
+)

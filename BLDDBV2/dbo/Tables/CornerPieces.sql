@@ -1,0 +1,5 @@
+﻿CREATE TABLE [dbo].[CornerPieces]
+(
+	[Id] INT NOT NULL PRIMARY KEY IDENTITY, 
+    [Piece] NCHAR(3) NOT NULL
+)

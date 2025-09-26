@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="2abba544-694a-4bea-a3ad-92a59a30fe9a" ChangeDateTime="08/29/2025 17:13:32">
+    <Property Name="ElementName" Value="[dbo].[EdgeCycles].[First]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[EdgeCycles]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Buffer" />
+  </Operation>
+</Operations>
