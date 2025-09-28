@@ -28,13 +28,14 @@ namespace DataLibrary.Data.CubeLibrary
         {
             setSolvedState();
         }
+        //set solved state based on SolvedCube
         public void setSolvedState()
         {
             Edges = (string[])SolvedCube.Edges.Clone();
             Corners = (string[])SolvedCube.Corners.Clone();
             Centers = (string[])SolvedCube.Centers.Clone();
         }
-
+        //Perform turn to cube using tables from SolvedCube
         public void turnCube(string turn)
         {
             switch (turn)
@@ -436,11 +437,10 @@ namespace DataLibrary.Data.CubeLibrary
                     break;
             }
         }
-
+        //Orient piece based on direction given
         public string Orient(string piece, int direction)
         {
-            //orient the piece based on the direction provided
-            if (piece.Length == 2) //edge piece
+            if (piece.Length == 2)//Edge
             {
                 if (direction == 1)
                 {
@@ -448,7 +448,7 @@ namespace DataLibrary.Data.CubeLibrary
                 }
                 else return piece;
             }
-            else if (piece.Length == 3) //corner piece
+            else if (piece.Length == 3)//Corner
             {
                 if (direction == -1)
                 {
@@ -465,7 +465,7 @@ namespace DataLibrary.Data.CubeLibrary
             }
             else return piece;
         }
-
+        //Cycle and orient the pieces based on the table complete the turn
         public void applyFaceTurn(int[,] table)
         {
             string temp;
@@ -492,7 +492,7 @@ namespace DataLibrary.Data.CubeLibrary
 
 
         }
-
+        //Cycle and orient the pieces based on the table to complete the turn
         public void applySliceTurn(int[,] table)
         {
             string temp;

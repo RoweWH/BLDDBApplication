@@ -19,7 +19,13 @@ namespace BLDAPI.Controllers
         {
             _algorithmData = algorithmData;
         }
-
+        /// <summary>
+        /// Get method for algorithms
+        /// </summary>
+        /// <param name="buffer">Buffer Piece</param>
+        /// <param name="first">First Target</param>
+        /// <param name="second">Second Target</param>
+        /// <returns>List of algorithms for specific case</returns>
         [HttpGet("buffer={buffer}&first={first}&second={second}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -34,7 +40,11 @@ namespace BLDAPI.Controllers
             }
             else return BadRequest(new { Message = "Invalid edge case request" });
         }
-
+        /// <summary>
+        /// Post method for large set of algorithms
+        /// </summary>
+        /// <param name="newAlgorithms">List of algorithms</param>
+        /// <returns>A list of results (Ok or BadRequest)</returns>
         [Route("[action]")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -54,7 +64,12 @@ namespace BLDAPI.Controllers
             }
             return results;
         }
-
+        /// <summary>
+        /// Post method that adds algorithm to the database if it solves the given case
+        /// </summary>
+        /// <param name="cornerCase">Case</param>
+        /// <param name="newAlgorithm">New algorithm that should solve the case</param>
+        /// <returns>New alg Id, if successful</returns>
         [Route("[action]")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -77,7 +92,11 @@ namespace BLDAPI.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Delete method
+        /// </summary>
+        /// <param name="id">Id of algorithm to be deleted</param>
+        /// <returns>Ok or NotFound</returns>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

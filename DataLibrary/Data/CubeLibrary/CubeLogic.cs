@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -69,6 +70,24 @@ namespace DataLibrary.Data.CubeLibrary
             }
             return moveList;
         }
+        /// <summary>
+        /// This method takes any of the acceptable algorithm notations and expands the algorithm
+        /// Any unwanted punctuation will also be removed
+        /// Any algorithms that are already in expanded form will pass through unaffected
+        /// 
+        /// The two main notations:
+        /// 
+        /// 1. a, b = a b a' b'
+        /// 2. a/b = a b a2 b' a
+        /// 
+        /// Algorithms in this form will also often have setup moves
+        /// 
+        /// 1. c : a,b = c a b a' b' c'
+        /// 2. c : a/b = c a b a2 b' a c'
+        /// 
+        /// </summary>
+        /// <param name="algorithm">Algorithm to be expanded</param>
+        /// <returns>A string of valid turns separated by spaces</returns>
         public static string ExpandAlgorithm(string algorithm)
         {
             List<string> setup = new List<string>();
@@ -127,7 +146,12 @@ namespace DataLibrary.Data.CubeLibrary
                     + CreateInverseString(setup);
             }
         }
-
+        /// <summary>
+        /// This method determines a 3 cycle by comparing a list of unsolved pieces with the list of solved pieces
+        /// </summary>
+        /// <param name="pieces">These are the unsolved pieces</param>
+        /// <param name="solvedPieces">These are the solved pieces</param>
+        /// <returns>A CycleModel containing the pieces that are cycled</returns>
         public static CycleModel TracePieces(string[] pieces, string[] solvedPieces)
         {
             string buffer = string.Empty;
@@ -177,7 +201,7 @@ namespace DataLibrary.Data.CubeLibrary
             return new CycleModel(buffer, first, second);
 
         }
-
+        //This method determines if a cube is solved except for 3 edges
         public static bool IsValidEdgeCycle(Cube cube)
         {
             if (cube.Centers.SequenceEqual(SolvedCube.Centers))
@@ -198,7 +222,7 @@ namespace DataLibrary.Data.CubeLibrary
             }
             else return false;
         }
-
+        //This method determines if a cube is solved except for 3 corners
         public static bool IsValidCornerCycle(Cube cube)
         {
             if (cube.Centers.SequenceEqual(SolvedCube.Centers))
@@ -220,8 +244,7 @@ namespace DataLibrary.Data.CubeLibrary
             else return false;
         }
 
-
-
+        //This method determines which edge case the algorithm solves
         public static CycleModel FindEdgeCase(string algorithm)
         {
             CycleModel edgeCase = new CycleModel();
@@ -243,7 +266,7 @@ namespace DataLibrary.Data.CubeLibrary
             else return new CycleModel();
 
         }
-
+        //This method determines what corner case the algorithm solves
         public static CycleModel FindCornerCase(string algorithm)
         {
             CycleModel cornerCase = new CycleModel();
@@ -264,7 +287,7 @@ namespace DataLibrary.Data.CubeLibrary
             else return new CycleModel();
             
         }
-
+        //This method rotates a cycle clockwise
         public static CycleModel RotateCycle(CycleModel newCase)
         {
             return new CycleModel(newCase.Second, newCase.Buffer, newCase.First);

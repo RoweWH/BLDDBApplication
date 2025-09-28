@@ -6,6 +6,18 @@ using System.Threading.Tasks;
 
 namespace DataLibrary.Data.CubeLibrary
 {
+    /// <summary>
+    /// This static class contains:
+    /// 1. All starting positions for a solved cube (the original state)
+    /// 2. All information for applying correct turns to a cube
+    ///     Example: tableR contains all the information for turning the right (R) side of a cube
+    ///             tableR = { { 3, 7, 6, 2, 3, 7, 11, 6 }, { -1, 1, -1, 1, 0, 0, 0, 0 } }
+    ///             3, 7, 6, 2 are the indexes of the corners to be cycled
+    ///             3, 7, 11, 6 are the indexes of the edges to be cycled
+    ///             -1, 1, -1, 1 are the orientation changes to be applied to the corners
+    ///             0, 0, 0, 0 are the orientation changes to be applied to the edges
+    ///     For tables E, S, and M, the corner indexes are replaced with center indexes
+    /// </summary>
     public static class SolvedCube
     {
         public static string[] Edges = { "UF", "UL", "UB", "UR", "FL", "BL", "BR", "FR", "DF", "DL", "DB", "DR" };

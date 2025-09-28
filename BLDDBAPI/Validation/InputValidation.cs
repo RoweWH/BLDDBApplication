@@ -42,7 +42,6 @@ namespace BLDAPI.Validation
             return true;
 
         }
-
         public static bool IsValidCornerRequest(CycleModel cornerCase)
         {
             List<string> validCorners = SolvedCube.Corners.ToList();

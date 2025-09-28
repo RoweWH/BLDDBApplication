@@ -23,7 +23,12 @@ namespace DataLibrary.Data
             _dataAccess = dataAccess;
             _connectionString = connectionString;
         }
-
+        /// <summary>
+        /// There are 6 possible ways an edge case can be written due to buffer piece choice and edge orientation.
+        /// This method determines which of the 6 possible combinations is the correct one stored in the database
+        /// </summary>
+        /// <param name="edgeCase"></param>
+        /// <returns>corrected edge case</returns>
         public async Task<CycleModel> CorrectEdgeCaseCycle(CycleModel edgeCase)
         {
             List<CycleModel> possibleCases = new List<CycleModel>();
@@ -44,8 +49,14 @@ namespace DataLibrary.Data
             }
             return edgeCase;
 
-
+        
         }
+        /// <summary>
+        /// There are 9 possible ways a corner case can be written due to buffer piece choice and orientation
+        /// This method determines which of the 9 combinations is the correct one stored in the database
+        /// </summary>
+        /// <param name="cornerCase"></param>
+        /// <returns>corrected corner case</returns>
         public async Task<CycleModel> CorrectCornerCaseCycle(CycleModel cornerCase)
         {
             List<CycleModel> possibleCases = new List<CycleModel>();
