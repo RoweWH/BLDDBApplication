@@ -112,7 +112,7 @@ namespace DataLibrary.Data
         public async Task<int> InsertEdgeAlg(AlgorithmModel newAlgorithm)
         {
             var foundCase = CubeLogic.FindEdgeCase(newAlgorithm.Algorithm);
-            if (foundCase.Buffer != null)
+            if (foundCase.Buffer != string.Empty)
             {
                 var trueCase = await CorrectEdgeCaseCycle(foundCase);
                 DynamicParameters p = new DynamicParameters();
@@ -154,7 +154,7 @@ namespace DataLibrary.Data
         public async Task<int> InsertCornerAlg(AlgorithmModel newAlgorithm)
         {
             var foundCase = CubeLogic.FindCornerCase(newAlgorithm.Algorithm);
-            if (foundCase.Buffer != null)
+            if (foundCase.Buffer != string.Empty)
             {
                 var trueCase = await CorrectCornerCaseCycle(foundCase);
                 DynamicParameters p = new DynamicParameters();

@@ -41,25 +41,28 @@ namespace BLDAPI.Controllers
         /// Post method for large set of algorithms
         /// </summary>
         /// <param name="newAlgorithms">List of algorithms</param>
-        /// <returns>A list of results (Ok or BadRequest)</returns>
+        /// <returns>Separates set into lists of valid and invalid algorithms. Valid algorithms were added to the database</returns>
         [Route("[action]")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<List<IActionResult>> PostAlgorithms(List<AlgorithmModel> newAlgorithms)
+        public async Task<IActionResult> PostAlgorithms(List<AlgorithmModel> newAlgorithms)
         {
-            List<IActionResult> results = new List<IActionResult>();
+            List<string> validAlgorithms = new List<string>();
+            List<string> invalidAlgorithms = new List<string>();
             foreach (var alg in newAlgorithms)
             {
                 int id = await _algorithmData.InsertCornerAlg(alg);
                 if (id != 0)
                 {
-                    results.Add(Ok(new { Id = id }));
+                    validAlgorithms.Add(alg.Algorithm);
                 }
                 else
-                    results.Add(BadRequest(new { Message = "Invalid Algorithm" }));
+                {
+                    invalidAlgorithms.Add(alg.Algorithm);
+                }
             }
-            return results;
+            return Ok(new { ValidAlgorithms = validAlgorithms,
+                            InvalidAlgorithms = invalidAlgorithms});
         }
         /// <summary>
         /// Post method that adds algorithm to the database if it solves the given case
