@@ -15,6 +15,7 @@ This is an API that connects to a database of algorithms used for Rubik's Cube b
 * SQL
 
 ## TODO
-* Parity algorithms are a must
-* Other advanced algsets maybe, not sure yet
+* Parity algorithms
+* Other advanced algsets?
+* Disallow duplicate algorithms
   
