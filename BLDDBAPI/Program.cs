@@ -12,6 +12,10 @@ builder.Services.AddSingleton(new ConnectionStringData
 });
 builder.Services.AddSingleton<IDataAccess, SqlDb>();
 builder.Services.AddSingleton<IAlgorithmData, AlgorithmData>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowOrigin", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -30,6 +34,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors("AllowOrigin");
 
 app.Run();
 
