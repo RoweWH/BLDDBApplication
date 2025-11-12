@@ -130,6 +130,42 @@ namespace DataLibrary.Data.CubeLibrary
                         applyFaceTurn(SolvedCube.tableD);
                     }
                     break;
+                case "R2'":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableR);
+                    }
+                    break;
+                case "F2'":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableF);
+                    }
+                    break;
+                case "L2'":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableL);
+                    }
+                    break;
+                case "B2'":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableB);
+                    }
+                    break;
+                case "U2'":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableU);
+                    }
+                    break;
+                case "D2'":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableD);
+                    }
+                    break;
                 case "E":
                     applySliceTurn(SolvedCube.tableE);
                     break;
@@ -175,6 +211,24 @@ namespace DataLibrary.Data.CubeLibrary
                         applySliceTurn(SolvedCube.tableM);
                     }
                     break;
+                case "E2'":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applySliceTurn(SolvedCube.tableE);
+                    }
+                    break;
+                case "S2'":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applySliceTurn(SolvedCube.tableS);
+                    }
+                    break;
+                case "M2'":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applySliceTurn(SolvedCube.tableM);
+                    }
+                    break;
                 case "Uw":
                     applyFaceTurn(SolvedCube.tableU);
                     for (int i = 0; i < 3; i++)
@@ -190,6 +244,13 @@ namespace DataLibrary.Data.CubeLibrary
                     applySliceTurn(SolvedCube.tableE);
                     break;
                 case "Uw2":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableU);
+                        applySliceTurn(SolvedCube.tableE);
+                    }
+                    break;
+                case "Uw2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableU);
@@ -216,6 +277,13 @@ namespace DataLibrary.Data.CubeLibrary
                         applySliceTurn(SolvedCube.tableE);
                     }
                     break;
+                case "Dw2'":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableD);
+                        applySliceTurn(SolvedCube.tableE);
+                    }
+                    break;
                 case "Fw'":
                     for (int i = 0; i < 3; i++)
                     {
@@ -236,6 +304,13 @@ namespace DataLibrary.Data.CubeLibrary
                         applySliceTurn(SolvedCube.tableS);
                     }
                     break;
+                case "Fw2'":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableF);
+                        applySliceTurn(SolvedCube.tableS);
+                    }
+                    break;
                 case "Lw'":
                     for (int i = 0; i < 3; i++)
                     {
@@ -250,6 +325,13 @@ namespace DataLibrary.Data.CubeLibrary
                     }
                     break;
                 case "Lw2":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableL);
+                        applySliceTurn(SolvedCube.tableM);
+                    }
+                    break;
+                case "Lw2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableL);
@@ -281,6 +363,13 @@ namespace DataLibrary.Data.CubeLibrary
                         applySliceTurn(SolvedCube.tableS);
                     }
                     break;
+                case "Bw2'":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableB);
+                        applySliceTurn(SolvedCube.tableS);
+                    }
+                    break;
                 case "Rw'":
                     for (int i = 0; i < 3; i++)
                     {
@@ -299,6 +388,13 @@ namespace DataLibrary.Data.CubeLibrary
                     }
                     break;
                 case "Rw2":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableR);
+                        applySliceTurn(SolvedCube.tableM);
+                    }
+                    break;
+                case "Rw2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableR);
@@ -326,6 +422,13 @@ namespace DataLibrary.Data.CubeLibrary
                         applySliceTurn(SolvedCube.tableE);
                     }
                     break;
+                case "u2'":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableU);
+                        applySliceTurn(SolvedCube.tableE);
+                    }
+                    break;
                 case "d'":
                     for (int i = 0; i < 3; i++)
                     {
@@ -340,6 +443,13 @@ namespace DataLibrary.Data.CubeLibrary
                     }
                     break;
                 case "d2":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableD);
+                        applySliceTurn(SolvedCube.tableE);
+                    }
+                    break;
+                case "d2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableD);
@@ -366,6 +476,13 @@ namespace DataLibrary.Data.CubeLibrary
                         applySliceTurn(SolvedCube.tableS);
                     }
                     break;
+                case "f2'":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableF);
+                        applySliceTurn(SolvedCube.tableS);
+                    }
+                    break;
                 case "l'":
                     for (int i = 0; i < 3; i++)
                     {
@@ -380,6 +497,13 @@ namespace DataLibrary.Data.CubeLibrary
                     }
                     break;
                 case "l2":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableL);
+                        applySliceTurn(SolvedCube.tableM);
+                    }
+                    break;
+                case "l2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableL);
@@ -411,6 +535,13 @@ namespace DataLibrary.Data.CubeLibrary
                         applySliceTurn(SolvedCube.tableS);
                     }
                     break;
+                case "b2'":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableB);
+                        applySliceTurn(SolvedCube.tableS);
+                    }
+                    break;
                 case "r'":
                     for (int i = 0; i < 3; i++)
                     {
@@ -429,6 +560,13 @@ namespace DataLibrary.Data.CubeLibrary
                     }
                     break;
                 case "r2":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableR);
+                        applySliceTurn(SolvedCube.tableM);
+                    }
+                    break;
+                case "r2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableR);

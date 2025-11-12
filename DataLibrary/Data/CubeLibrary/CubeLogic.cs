@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ namespace DataLibrary.Data.CubeLibrary
             new List<string> { "DFR", "FDR", "RDF" },
             new List<string> { "DBR", "RDB", "BDR" }
         };
-        public static string CreateString(List<string> moveList)
+        public static string CreateString(string[] moveList)
         {
             var sb = new StringBuilder();
             foreach (var m in moveList)
@@ -31,11 +32,11 @@ namespace DataLibrary.Data.CubeLibrary
             }
             return sb.ToString();
         }
-        public static string CreateInverseString(List<string> moveList)
+        public static string CreateInverseString(string[] moveList)
         {
             var reversedMoves = new List<string>();
 
-            for (int i = moveList.Count - 1; i >= 0; i--)
+            for (int i = moveList.Length - 1; i >= 0; i--)
             {
                 if (moveList[i].EndsWith('\''))
                 {
@@ -50,10 +51,10 @@ namespace DataLibrary.Data.CubeLibrary
                     reversedMoves.Add(moveList[i] + "'");
                 }
             }
-            return CreateString(reversedMoves);
+            return CreateString(reversedMoves.ToArray());
 
         }
-        public static List<string> RemoveBrackets(string[] moveArray)
+        public static string[] RemoveBrackets(string[] moveArray)
         {
             List<string> moveList = new List<string>();
             for (int i = 0; i < moveArray.Length; i++)
@@ -61,14 +62,14 @@ namespace DataLibrary.Data.CubeLibrary
                 var sb = new StringBuilder();
                 foreach (var c in moveArray[i])
                 {
-                    if (c != '[' && c != ']' && c != ' ')
+                    if (c != '[' && c != ']' && c != ' ' && c != '(' && c != ')')
                     {
                         sb.Append(c);
                     }
                 }
                 moveList.Add(sb.ToString());
             }
-            return moveList;
+            return moveList.ToArray();
         }
         /// <summary>
         /// This method takes any of the acceptable algorithm notations and expands the algorithm
@@ -90,60 +91,74 @@ namespace DataLibrary.Data.CubeLibrary
         /// <returns>A string of valid turns separated by spaces</returns>
         public static string ExpandAlgorithm(string algorithm)
         {
-            List<string> setup = new List<string>();
-            List<string> interchange = new List<string>();
-            List<string> insert = new List<string>();
-            string doubleInterchange = string.Empty;
-
+            string[] setupList = Array.Empty<string>();
             if (algorithm.Contains(':'))
             {
                 int index = algorithm.IndexOf(':');
-                string setupString = algorithm.Substring(0, index).Trim(); ;
+                string setupString = algorithm.Substring(0, index).Trim();
                 algorithm = algorithm.Substring(index + 1).Trim();
-                var setupList = setupString.Split(" ");
-                setup = RemoveBrackets(setupList);
+                setupList = RemoveBrackets(setupString.Split(" "));
             }
             if (algorithm.Contains(','))
             {
                 int index = algorithm.IndexOf(',');
                 string interchangeString = algorithm.Substring(0, index).Trim();
-                algorithm = algorithm.Substring(index + 1).Trim();
-                var interchangeList = interchangeString.Split(" ");
-                interchange = RemoveBrackets(interchangeList);
+                string insertString = algorithm.Substring(index + 1).Trim();
+                string[] interchangeList = RemoveBrackets(interchangeString.Split(" "));
+                string[] insertList = RemoveBrackets(insertString.Split(" "));
+                return CreateString(setupList)
+                    + CreateString(interchangeList)
+                    + CreateString(insertList)
+                    + CreateInverseString(interchangeList)
+                    + CreateInverseString(insertList)
+                    + CreateInverseString(setupList);
             }
-            if (algorithm.Contains('/'))
+            else if (algorithm.Contains('/'))
             {
                 int index = algorithm.IndexOf('/');
-                doubleInterchange = algorithm.Substring(0, index).Trim() + " ";
-                algorithm = algorithm.Substring(index + 1).Trim();
-
+                string doubleInterchange = algorithm.Substring(0, index).Trim() + " ";
+                string insertString = algorithm.Substring(index + 1).Trim();
+                string[] doubleInterchangeList = RemoveBrackets(doubleInterchange.Split(" "));
+                string[] insertList = RemoveBrackets(insertString.Split(" "));
+                return CreateString(setupList)
+                    + doubleInterchange
+                    + CreateString(insertList)
+                    + doubleInterchange
+                    + doubleInterchange
+                    + CreateInverseString(insertList)
+                    + doubleInterchange
+                    + CreateInverseString(setupList);
             }
-            string insertString = algorithm.Trim();
-            var insertList = insertString.Split(" ");
-            insert = RemoveBrackets(insertList);
-            if (setup.Count == 0 && interchange.Count == 0)
+            else if (algorithm.Contains(")2") || algorithm.Contains(")x2") || algorithm.Contains("x2") || algorithm.Contains(") 2") || algorithm.Contains(") x2"))
             {
-                return insertString;
-            }
-            if (doubleInterchange != string.Empty)
-            {
-                return CreateString(setup)
-                    + doubleInterchange
-                    + CreateString(insert)
-                    + doubleInterchange
-                    + doubleInterchange
-                    + CreateInverseString(insert)
-                    + doubleInterchange
-                    + CreateInverseString(setup);
+                int index = 0;
+                if (algorithm.Contains(")2")){
+                    index = algorithm.IndexOf(")2");
+                }
+                else if (algorithm.Contains(")x2"))
+                {
+                    index = algorithm.IndexOf(")x2");
+                }
+                else if (algorithm.Contains("x2"))
+                {
+                    index = algorithm.IndexOf("x2");
+                }
+                else if (algorithm.Contains(") 2"))
+                {
+                    index = algorithm.IndexOf(") 2");
+                }
+                else if (algorithm.Contains(") x2"))
+                {
+                    index = algorithm.IndexOf(") x2");
+                }
+                string doubledAlgorithm = algorithm.Substring(0, index).Trim() + " " + algorithm.Substring(0, index).Trim();
+                string[] doubledAlgorithmList = RemoveBrackets(doubledAlgorithm.Split(" "));
+                return CreateString(doubledAlgorithmList);
             }
             else
             {
-                return CreateString(setup)
-                    + CreateString(interchange)
-                    + CreateString(insert)
-                    + CreateInverseString(interchange)
-                    + CreateInverseString(insert)
-                    + CreateInverseString(setup);
+                string[] algorithmList = RemoveBrackets(algorithm.Split(" "));
+                return CreateString(algorithmList);
             }
         }
         /// <summary>
