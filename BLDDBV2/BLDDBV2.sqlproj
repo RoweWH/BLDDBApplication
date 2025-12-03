@@ -80,6 +80,14 @@
     <Build Include="dbo\Stored Procedures\spEdgeAlgorithms_InsertByCycle.sql" />
     <Build Include="dbo\Stored Procedures\spCornerCases_GetId.sql" />
     <Build Include="dbo\Stored Procedures\spEdgeCases_GetId.sql" />
+    <Build Include="dbo\Tables\ParityCases.sql" />
+    <Build Include="dbo\Tables\ParityAlgorithms.sql" />
+    <Build Include="dbo\Stored Procedures\spParityAlgorithms_Delete.sql" />
+    <Build Include="dbo\Stored Procedures\spParityAlgorithms_GetByCase.sql" />
+    <Build Include="dbo\Stored Procedures\spParityAlgorithms_GetByCaseId.sql" />
+    <Build Include="dbo\Stored Procedures\spParityAlgorithms_InsertByCase.sql" />
+    <Build Include="dbo\Stored Procedures\spParityAlgorithms_InsertByCaseId.sql" />
+    <Build Include="dbo\Stored Procedures\spParityCases_GetId.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="BLDDBV2.refactorlog" />

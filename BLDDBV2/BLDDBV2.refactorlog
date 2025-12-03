@@ -7,4 +7,25 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="Buffer" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="23061920-f1ba-4e58-bed5-5fce361545b1" ChangeDateTime="11/30/2025 00:10:00">
+    <Property Name="ElementName" Value="[dbo].[ParityAlgorithms].[FirstEdge]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ParityAlgorithms]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="BufferEdge" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ebc98976-a52b-49c2-adc2-12aef2ff98b0" ChangeDateTime="11/30/2025 00:10:11">
+    <Property Name="ElementName" Value="[dbo].[ParityAlgorithms].[BufferEdge]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ParityAlgorithms]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FirstEdge" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4a0d6f6d-c28d-454b-8b18-5f3a467224c5" ChangeDateTime="12/03/2025 03:04:46">
+    <Property Name="ElementName" Value="[dbo].[ParityAlgorithms].[ParityId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ParityAlgorithms]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="CaseId" />
+  </Operation>
 </Operations>
