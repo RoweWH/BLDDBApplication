@@ -28,6 +28,11 @@ namespace DataLibrary.Data.CubeLibrary
         {
             setSolvedState();
         }
+        public void Print()
+        {
+            foreach (var edge in Edges) Console.WriteLine(edge);
+            foreach(var corner in Corners) Console.WriteLine(corner);
+        }
         //set solved state based on SolvedCube
         public void setSolvedState()
         {

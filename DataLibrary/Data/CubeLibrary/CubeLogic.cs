@@ -71,24 +71,7 @@ namespace DataLibrary.Data.CubeLibrary
             }
             return moveList.ToArray();
         }
-        /// <summary>
-        /// This method takes any of the acceptable algorithm notations and expands the algorithm
-        /// Any unwanted punctuation will also be removed
-        /// Any algorithms that are already in expanded form will pass through unaffected
-        /// 
-        /// The two main notations:
-        /// 
-        /// 1. a, b = a b a' b'
-        /// 2. a/b = a b a2 b' a
-        /// 
-        /// Algorithms in this form will also often have setup moves
-        /// 
-        /// 1. c : a,b = c a b a' b' c'
-        /// 2. c : a/b = c a b a2 b' a c'
-        /// 
-        /// </summary>
-        /// <param name="algorithm">Algorithm to be expanded</param>
-        /// <returns>A string of valid turns separated by spaces</returns>
+        
         public static string ExpandAlgorithm(string algorithm)
         {
             string[] setupList = Array.Empty<string>();
@@ -161,151 +144,158 @@ namespace DataLibrary.Data.CubeLibrary
                 return CreateString(algorithmList);
             }
         }
-        /// <summary>
-        /// This method determines a 3 cycle by comparing a list of unsolved pieces with the list of solved pieces
-        /// </summary>
-        /// <param name="pieces">These are the unsolved pieces</param>
-        /// <param name="solvedPieces">These are the solved pieces</param>
-        /// <returns>A CycleModel containing the pieces that are cycled</returns>
-        public static CycleModel TracePieces(string[] pieces, string[] solvedPieces)
+        
+        public static List<List<string>> FindCycles(string[] piecesArray, string[] solvedPiecesArray)
         {
-            string buffer = string.Empty;
-            string first = string.Empty;
-            string second = string.Empty;
-            int index = 0;
-            bool foundBuffer = false;
-            while (!foundBuffer)
-            {
-                if (pieces[index] == solvedPieces[index]) index++;
-                else foundBuffer = true;
-            }
-            first = pieces[index];
-            buffer = solvedPieces[index];
-            if (pieces[0].Length == 2)
-            {
-                for (int i = 0; i < pieces.Length; i++)
-                {
-                    if (pieces[i] == buffer)
-                    {
-                        second = solvedPieces[i];
-                    }
-                    else if (FlipEdge(pieces[i]) == buffer)
-                    {
-                        second = FlipEdge(solvedPieces[i]);
-                    }
-                }
-            }
-            else if (pieces[0].Length == 3)
-            {
-                for (int i = 0; i < pieces.Length; i++)
-                {
-                    if (pieces[i] == buffer)
-                    {
-                        second = solvedPieces[i];
-                    }
-                    else if (TwistCorner(pieces[i]) == buffer)
-                    {
-                        second = TwistCorner(solvedPieces[i]);
-                    }
-                    else if (TwistCorner(TwistCorner(pieces[i])) == buffer)
-                    {
-                        second = TwistCorner(TwistCorner(solvedPieces[i]));
-                    }
-                }
-            }
-            return new CycleModel(buffer, first, second);
+            List<string> pieces = piecesArray.ToList();
+            List<string> solvedPieces = solvedPiecesArray.ToList();
+            List<List<string>> cycles = new List<List<string>>();
 
-        }
-        //This method determines if a cube is solved except for 3 edges
-        public static bool IsValidEdgeCycle(Cube cube)
-        {
-            if (cube.Centers.SequenceEqual(SolvedCube.Centers))
+            for (int i = 0; i < pieces.Count; i++)
             {
-                if (cube.Corners.SequenceEqual(SolvedCube.Corners) && !cube.Edges.SequenceEqual(SolvedCube.Edges))
+                if (pieces[i] == solvedPieces[i])
                 {
-                    int counter = 0;
-                    for (int i = 0; i < cube.Edges.Length; i++)
+                    pieces.RemoveAt(i);
+                    solvedPieces.RemoveAt(i);
+                    i--;
+                }
+            }
+
+            while (pieces.Count != 0)
+            {
+                List<string> cycle = new List<string>();
+                string bufferPiece = solvedPieces[0];
+                string next = bufferPiece;
+                do
+                {
+                    cycle.Add(next);
+
+                    if (solvedPieces.Contains(next))
                     {
-                        if (cube.Edges[i] != SolvedCube.Edges[i])
+                        next = pieces[solvedPieces.IndexOf(next)];
+                    }
+                    else if (solvedPieces.Contains(CubeLogic.Orient(next)))
+                    {
+                        if (next.Length == 2)
                         {
-                            counter++;
+                            next = CubeLogic.Orient(pieces[solvedPieces.IndexOf(CubeLogic.Orient(next))]);
+                        }
+                        else
+                        {
+                            next = CubeLogic.Orient(CubeLogic.Orient(pieces[solvedPieces.IndexOf(CubeLogic.Orient(next))]));
                         }
                     }
-                    return (counter == 3);
-                }
-                else return false;
-            }
-            else return false;
-        }
-        //This method determines if a cube is solved except for 3 corners
-        public static bool IsValidCornerCycle(Cube cube)
-        {
-            if (cube.Centers.SequenceEqual(SolvedCube.Centers))
-            {
-                if (cube.Edges.SequenceEqual(SolvedCube.Edges) && !cube.Corners.SequenceEqual(SolvedCube.Corners))
-                {
-                    int counter = 0;
-                    for (int i = 0; i < cube.Corners.Length; i++)
+                    else if (solvedPieces.Contains(CubeLogic.Orient(CubeLogic.Orient(next))))
                     {
-                        if (cube.Corners[i] != SolvedCube.Corners[i])
-                        {
-                            counter++;
-                        }
+                        next = CubeLogic.Orient(pieces[solvedPieces.IndexOf(CubeLogic.Orient(CubeLogic.Orient(next)))]);
                     }
-                    return (counter == 3);
-                }
-                else return false;
-            }
-            else return false;
-        }
+                } while (next != bufferPiece && next != CubeLogic.Orient(bufferPiece) && next != CubeLogic.Orient(CubeLogic.Orient(bufferPiece)));
 
-        //This method determines which edge case the algorithm solves
-        public static CycleModel FindEdgeCase(string algorithm)
-        {
-            CycleModel edgeCase = new CycleModel();
-            string expandedAlgorithm = ExpandAlgorithm(algorithm);
-            var moves = expandedAlgorithm.Split(' ');
-            Cube newCube = new Cube();
-            for (int i = 0; i < 2; i++)
-            {
-                foreach (var m in moves)
+                cycle.Add(next);
+
+                foreach (var piece in cycle)
                 {
-                    newCube.turnCube(m);
-                }
-            }
-            if (IsValidEdgeCycle(newCube))
-            {
-                return TracePieces(newCube.Edges, SolvedCube.Edges);
+                    if (pieces.Contains(piece))
+                    {
+                        pieces.Remove(piece);
+                    }
+                    else if (pieces.Contains(CubeLogic.Orient(piece)))
+                    {
+                        pieces.Remove(CubeLogic.Orient(piece));
+                    }
+                    else if (pieces.Contains(CubeLogic.Orient(CubeLogic.Orient(piece))))
+                    {
+                        pieces.Remove(CubeLogic.Orient(CubeLogic.Orient(piece)));
+                    }
 
-            }
-            else return new CycleModel();
+                    if (solvedPieces.Contains(piece))
+                    {
+                        solvedPieces.Remove(piece);
+                    }
+                    else if (solvedPieces.Contains(CubeLogic.Orient(piece)))
+                    {
+                        solvedPieces.Remove(CubeLogic.Orient(piece));
+                    }
+                    else if (solvedPieces.Contains(CubeLogic.Orient(CubeLogic.Orient(piece))))
+                    {
+                        solvedPieces.Remove(CubeLogic.Orient(CubeLogic.Orient(piece)));
+                    }
 
-        }
-        //This method determines what corner case the algorithm solves
-        public static CycleModel FindCornerCase(string algorithm)
-        {
-            CycleModel cornerCase = new CycleModel();
-            string expandedAlgorithm = ExpandAlgorithm(algorithm);
-            var moves = expandedAlgorithm.Split(' ');
-            Cube newCube = new Cube();
-            for (int i = 0; i < 2; i++)
-            {
-                foreach (var m in moves)
-                {
-                    newCube.turnCube(m);
+
                 }
+                cycles.Add(cycle);
             }
-            if (IsValidCornerCycle(newCube))
-            {
-                return TracePieces(newCube.Corners, SolvedCube.Corners);
-            }
-            else return new CycleModel();
             
+            return cycles;
+
+
         }
-        //This method rotates a cycle clockwise
-        public static CycleModel RotateCycle(CycleModel newCase)
+        public static CaseModel CaseTracer(Cube cube)
         {
-            return new CycleModel(newCase.Second, newCase.Buffer, newCase.First);
+            if (!cube.Centers.SequenceEqual(SolvedCube.Centers))
+            {
+                return new CaseModel();
+            }
+            List<List<string>> edgeCycles = FindCycles(cube.Edges, SolvedCube.Edges);
+            if(edgeCycles.Count > 1)
+            {
+                return new CaseModel();
+            }
+            List<List<string>> cornerCycles = FindCycles(cube.Corners, SolvedCube.Corners);
+            switch (edgeCycles.Count)
+            {
+                case 0:
+                    if (cornerCycles.Count == 1)
+                    {
+                        if (cornerCycles[0].Count == 4)
+                        {
+                            //3 cycle corners
+                            return new CornerCycleModel(cornerCycles[0][0], cornerCycles[0][1], cornerCycles[0][2]);
+                        }
+                    }
+                    break;
+
+                case 1:
+                    if (edgeCycles[0].Count == 3)
+                    {
+                        if(cornerCycles.Count == 1 && cornerCycles[0].Count == 3)
+                        {
+                            //Parity case
+                            return new ParityModel(edgeCycles[0][0], edgeCycles[0][1], cornerCycles[0][0], cornerCycles[0][1]);
+                        }
+                    }
+                    else if (edgeCycles[0].Count == 4)
+                    {
+                        if(cornerCycles.Count == 0)
+                        {
+                            //3 cycle edges
+                            return new EdgeCycleModel(edgeCycles[0][0], edgeCycles[0][1], edgeCycles[0][2]);
+                        }
+                    }
+                    break;
+
+                default:
+                    return new CaseModel();
+
+            }
+
+            return new CaseModel();
+        }
+
+        public static CaseModel FindCase(AlgorithmModel algorithm)
+        {
+            string expandedAlgorithm = ExpandAlgorithm(algorithm.Algorithm);
+            var moves = expandedAlgorithm.Split(' ');
+            Cube newCube = new Cube();
+            for (int i = 0; i < 2; i++)
+            {
+                foreach (var m in moves)
+                {
+                    newCube.turnCube(m);
+                }
+            }
+            return CaseTracer(newCube);
+
         }
         public static string FlipEdge(string edge)
         {
@@ -327,14 +317,21 @@ namespace DataLibrary.Data.CubeLibrary
 
             return corner;
         }
-        public static CycleModel FlipEdgeCycle(CycleModel newCase)
+        public static string Orient(string piece)
         {
-            return new CycleModel(FlipEdge(newCase.Buffer), FlipEdge(newCase.First), FlipEdge(newCase.Second));
+            if (piece.Length == 2)
+            {
+                return FlipEdge(piece);
+            }
+            else if (piece.Length == 3)
+            {
+                return TwistCorner(piece);
+            }
+            else
+            {
+                return piece;
+            }
         }
 
-        public static CycleModel TwistCornerCycle(CycleModel newCase)
-        {
-            return new CycleModel(TwistCorner(newCase.Buffer), TwistCorner(newCase.First), TwistCorner(newCase.Second));
-        }
     }
 }

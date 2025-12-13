@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -23,209 +24,287 @@ namespace DataLibrary.Data
             _dataAccess = dataAccess;
             _connectionString = connectionString;
         }
-        /// <summary>
-        /// There are 6 possible ways an edge case can be written due to buffer piece choice and edge orientation.
-        /// This method determines which of the 6 possible combinations is the correct one stored in the database
-        /// </summary>
-        /// <param name="edgeCase"></param>
-        /// <returns>corrected edge case</returns>
-        public async Task<CycleModel> CorrectEdgeCaseCycle(CycleModel edgeCase)
+        public async Task<CaseModel> CorrectCase(CaseModel caseToFix)
         {
-            List<CycleModel> possibleCases = new List<CycleModel>();
-            possibleCases.Add(edgeCase);
-            possibleCases.Add(CubeLogic.FlipEdgeCycle(edgeCase));
-            possibleCases.Add(CubeLogic.RotateCycle(edgeCase));
-            possibleCases.Add(CubeLogic.FlipEdgeCycle(CubeLogic.RotateCycle(edgeCase)));
-            possibleCases.Add(CubeLogic.RotateCycle(CubeLogic.RotateCycle(edgeCase)));
-            possibleCases.Add(CubeLogic.FlipEdgeCycle(CubeLogic.RotateCycle(CubeLogic.RotateCycle(edgeCase))));
-            foreach (var possibleCase in possibleCases)
+            switch (caseToFix)
             {
-                var foundId = await GetEdgeCaseId(possibleCase);
-                if (foundId > 0)
+                case EdgeCycleModel edgeCase:
+                    {
+                        List<CaseModel> variations = edgeCase.Variations().Cast<CaseModel>().ToList();
+                        foreach (var v in variations)
+                        {
+                            var foundId = await GetCaseId((EdgeCycleModel)v);
+                            if (foundId > 0)
+                            {
+                                edgeCase = (EdgeCycleModel)v;
+                                return edgeCase;
+                            }
+                        }
+                        break;
+                    }
+
+                case CornerCycleModel cornerCase:
+                    {
+                        List<CaseModel> variations = cornerCase.Variations().Cast<CaseModel>().ToList();
+                        foreach (var v in variations)
+                        {
+                            var foundId = await GetCaseId((CornerCycleModel)v);
+                            if (foundId > 0)
+                            {
+                                cornerCase = (CornerCycleModel)v;
+                                return cornerCase;
+                            }
+                        }
+                        break;
+                    }
+                case ParityModel parityCase:
+                    {
+                        List<CaseModel> variations = parityCase.Variations().Cast<CaseModel>().ToList();
+                        foreach (var v in variations)
+                        {
+                            var foundId = await GetCaseId((ParityModel)v);
+                            if (foundId > 0)
+                            {
+                                parityCase = (ParityModel)v;
+                                return parityCase;
+                            }
+                        }
+                        break;
+                    }
+                default:
+                    return new CaseModel();
+            }
+            // Ensure a return value for all code paths
+            return new CaseModel();
+        }
+        public async Task<List<AlgorithmModel>> LoadAlgorithms(CaseModel caseToLoad)
+        {
+            List<AlgorithmModel> algorithms = new List<AlgorithmModel>();
+            switch (caseToLoad)
+            {
+                case EdgeCycleModel:
+                    {
+                        EdgeCycleModel edgeCase = (EdgeCycleModel)await CorrectCase(caseToLoad);
+                        algorithms = await _dataAccess.LoadData<AlgorithmModel, dynamic>("dbo.spEdgeAlgorithms_GetByCycle",
+                                                       new { Buffer = edgeCase.Buffer, First = edgeCase.First, Second = edgeCase.Second },
+                                                       _connectionString.SqlConnectionName);
+                        foreach (var alg in algorithms)
+                        {
+                            alg.Case = edgeCase;
+                        }
+                        return algorithms;
+                    }
+                case CornerCycleModel:
+                    {
+                        CornerCycleModel cornerCase = (CornerCycleModel)await CorrectCase(caseToLoad);
+                        algorithms = await _dataAccess.LoadData<AlgorithmModel, dynamic>("dbo.spCornerAlgorithms_GetByCycle",
+                                                                   new { Buffer = cornerCase.Buffer, First = cornerCase.First, Second = cornerCase.Second },
+                                                                   _connectionString.SqlConnectionName);
+                        foreach (var alg in algorithms)
+                        {
+                            alg.Case = cornerCase;
+                        }
+                        return algorithms;
+                    }
+                default:
+                    return new List<AlgorithmModel>();
+            }
+        }
+
+        public async Task<int> InsertAlg(AlgorithmModel newAlgorithm)
+        {
+            var foundCase = CubeLogic.FindCase(newAlgorithm);
+            if (foundCase != null)
+            {
+                switch (foundCase)
                 {
-                    edgeCase = possibleCase;
-                    break;
+                    case EdgeCycleModel:
+                        {
+                            var trueCase = await CorrectCase(foundCase) as EdgeCycleModel;
+                            if (trueCase == null)
+                            {
+                                return 0;
+                            }
+                            DynamicParameters p = new DynamicParameters();
+                            p.Add("Buffer", trueCase.Buffer);
+                            p.Add("First", trueCase.First);
+                            p.Add("Second", trueCase.Second);
+                            p.Add("Algorithm", newAlgorithm.Algorithm);
+                            p.Add("Id", DbType.Int32, direction: ParameterDirection.Output);
+
+                            await _dataAccess.SaveData("dbo.spEdgeAlgorithms_InsertByCycle", p, _connectionString.SqlConnectionName);
+                            return p.Get<int>("Id");
+                            
+                        }
+
+                    case CornerCycleModel:
+                        {
+                            var trueCase = await CorrectCase(foundCase) as CornerCycleModel;
+                            if (trueCase == null)
+                            {
+                                return 0;
+                            }
+                            DynamicParameters p = new DynamicParameters();
+                            p.Add("Buffer", trueCase.Buffer);
+                            p.Add("First", trueCase.First);
+                            p.Add("Second", trueCase.Second);
+                            p.Add("Algorithm", newAlgorithm.Algorithm);
+                            p.Add("Id", DbType.Int32, direction: ParameterDirection.Output);
+                            await _dataAccess.SaveData("dbo.spCornerAlgorithms_InsertByCycle", p, _connectionString.SqlConnectionName);
+                            return p.Get<int>("Id");
+                        }
+
+                    case ParityModel:
+                        {
+                            var trueCase = await CorrectCase(foundCase) as ParityModel;
+                            if(trueCase == null)
+                            {
+                                return 0;
+                            }
+                            DynamicParameters p = new DynamicParameters();
+                            p.Add("FirstEdge", trueCase.FirstEdge);
+                            p.Add("SecondEdge", trueCase.SecondEdge);
+                            p.Add("FirstCorner", trueCase.FirstCorner);
+                            p.Add("SecondCorner", trueCase.SecondCorner);
+                            p.Add("Algorithm", newAlgorithm.Algorithm);
+                            p.Add("Id", DbType.Int32, direction: ParameterDirection.Output);
+                            await _dataAccess.SaveData("dbo.spParityAlgorithms_InsertByCase", p, _connectionString.SqlConnectionName);
+                            return p.Get<int>("Id");
+                        }
+                    default:
+                        return 0;
                 }
             }
-            return edgeCase;
-
-        
-        }
-        /// <summary>
-        /// There are 9 possible ways a corner case can be written due to buffer piece choice and orientation
-        /// This method determines which of the 9 combinations is the correct one stored in the database
-        /// </summary>
-        /// <param name="cornerCase"></param>
-        /// <returns>corrected corner case</returns>
-        public async Task<CycleModel> CorrectCornerCaseCycle(CycleModel cornerCase)
-        {
-            List<CycleModel> possibleCases = new List<CycleModel>();
-            possibleCases.Add(cornerCase);
-            possibleCases.Add(CubeLogic.TwistCornerCycle(cornerCase));
-            possibleCases.Add(CubeLogic.TwistCornerCycle(CubeLogic.TwistCornerCycle(cornerCase)));
-            possibleCases.Add(CubeLogic.RotateCycle(cornerCase));
-            possibleCases.Add(CubeLogic.TwistCornerCycle(CubeLogic.RotateCycle(cornerCase)));
-            possibleCases.Add(CubeLogic.TwistCornerCycle(CubeLogic.TwistCornerCycle((CubeLogic.RotateCycle(cornerCase)))));
-            possibleCases.Add(CubeLogic.RotateCycle(CubeLogic.RotateCycle(cornerCase)));
-            possibleCases.Add(CubeLogic.TwistCornerCycle(CubeLogic.RotateCycle(CubeLogic.RotateCycle(cornerCase))));
-            possibleCases.Add(CubeLogic.TwistCornerCycle(CubeLogic.TwistCornerCycle((CubeLogic.RotateCycle(CubeLogic.RotateCycle(cornerCase))))));
-            foreach (var possibleCase in possibleCases)
+            else
             {
-                var foundId = await GetCornerCaseId(possibleCase);
-                if (foundId > 0)
-                {
-                    cornerCase = possibleCase;
-                    break;
-                }
+                return 0;
             }
-            return cornerCase;
-        }
-        public async Task<List<AlgorithmModel>> LoadEdgeAlgorithms(CycleModel edgeCase)
-        {
-            edgeCase = await CorrectEdgeCaseCycle(edgeCase);
-            return await _dataAccess.LoadData<AlgorithmModel, dynamic>("dbo.spEdgeAlgorithms_GetByCycle",
-                                                                       new { Buffer = edgeCase.Buffer, First = edgeCase.First, Second = edgeCase.Second },
-                                                                       _connectionString.SqlConnectionName);
-        }
-        public async Task<List<AlgorithmModel>> LoadCornerAlgorithms(CycleModel cornerCase)
-        {
-            cornerCase = await CorrectCornerCaseCycle(cornerCase);
-            return await _dataAccess.LoadData<AlgorithmModel, dynamic>("dbo.spCornerAlgorithms_GetByCycle",
-                                                                       new { Buffer = cornerCase.Buffer, First = cornerCase.First, Second = cornerCase.Second },
-                                                                       _connectionString.SqlConnectionName);
 
         }
 
-        public async Task<List<AlgorithmModel>> LoadCornerAlgorithms(int id)
-        {
-            return await _dataAccess.LoadData<AlgorithmModel, dynamic>("dbo.spCornerAlgorithms_GetByCycleId",
-                                                                       new { id = id },
-                                                                       _connectionString.SqlConnectionName);
-        }
-        public async Task<List<AlgorithmModel>> LoadEdgeAlgorithms(int id)
-        {
-            return await _dataAccess.LoadData<AlgorithmModel, dynamic>("dbo.spEdgeAlgorithms_GetByCycleId",
-                                                                       new { id = id },
-                                                                       _connectionString.SqlConnectionName);
-        }
 
-        public async Task<int> InsertEdgeAlg(AlgorithmModel newAlgorithm)
+        public async Task<int> InsertAlgByCase(AlgorithmModel newAlgorithm)
         {
-            var foundCase = CubeLogic.FindEdgeCase(newAlgorithm.Algorithm);
-            if (foundCase.Buffer != string.Empty)
+            switch (newAlgorithm.Case)
             {
-                var trueCase = await CorrectEdgeCaseCycle(foundCase);
-                DynamicParameters p = new DynamicParameters();
-                p.Add("Buffer", trueCase.Buffer);
-                p.Add("First", trueCase.First);
-                p.Add("Second", trueCase.Second);
-                p.Add("Algorithm", newAlgorithm.Algorithm);
-                p.Add("Id", DbType.Int32, direction: ParameterDirection.Output);
-
-                await _dataAccess.SaveData("dbo.spEdgeAlgorithms_InsertByCycle", p, _connectionString.SqlConnectionName);
-                return p.Get<int>("Id");
+                case EdgeCycleModel edgeCase:
+                    {
+                        EdgeCycleModel givenCase = (EdgeCycleModel)await CorrectCase(edgeCase);
+                        EdgeCycleModel foundCase = (EdgeCycleModel)await CorrectCase(CubeLogic.FindCase(newAlgorithm));
+                        if (givenCase.Equals(foundCase))
+                        {
+                            DynamicParameters p = new DynamicParameters();
+                            p.Add("Buffer", givenCase.Buffer);
+                            p.Add("First", givenCase.First);
+                            p.Add("Second", givenCase.Second);
+                            p.Add("Algorithm", newAlgorithm.Algorithm);
+                            p.Add("Id", DbType.Int32, direction: ParameterDirection.Output);
+                            await _dataAccess.SaveData("dbo.spEdgeAlgorithms_InsertByCycle", p, _connectionString.SqlConnectionName);
+                            return p.Get<int>("Id");
+                        }
+                        else return 0;
+                    }
+                case CornerCycleModel cornerCase:
+                    {
+                        CornerCycleModel givenCase = (CornerCycleModel)await CorrectCase(cornerCase);
+                        CornerCycleModel foundCase = (CornerCycleModel)await CorrectCase(CubeLogic.FindCase(newAlgorithm));
+                        if (givenCase.Equals(foundCase))
+                        {
+                            DynamicParameters p = new DynamicParameters();
+                            p.Add("Buffer", givenCase.Buffer);
+                            p.Add("First", givenCase.First);
+                            p.Add("Second", givenCase.Second);
+                            p.Add("Algorithm", newAlgorithm.Algorithm);
+                            p.Add("Id", DbType.Int32, direction: ParameterDirection.Output);
+                            await _dataAccess.SaveData("dbo.spCornerAlgorithms_InsertByCycle", p, _connectionString.SqlConnectionName);
+                            return p.Get<int>("Id");
+                        }
+                        else return 0;
+                    }
+                case ParityModel parityCase:
+                    {
+                        ParityModel givenCase = (ParityModel)await CorrectCase(parityCase);
+                        ParityModel foundCase = (ParityModel)await CorrectCase(CubeLogic.FindCase(newAlgorithm));
+                        if (givenCase.Equals(foundCase))
+                        {
+                            DynamicParameters p = new DynamicParameters();
+                            p.Add("FirstEdge", givenCase.FirstEdge);
+                            p.Add("SecondEdge", givenCase.SecondEdge);
+                            p.Add("FirstCorner", givenCase.FirstCorner);
+                            p.Add("SecondCorner", givenCase.SecondCorner);
+                            p.Add("Algorithm", newAlgorithm.Algorithm);
+                            p.Add("Id", DbType.Int32, direction: ParameterDirection.Output);
+                            await _dataAccess.SaveData("dbo.spParityAlgorithms_InsertByCase", p, _connectionString.SqlConnectionName);
+                            return p.Get<int>("Id");
+                        }
+                        else return 0;
+                    }
+                default:
+                    return 0;
             }
-            else return 0;
         }
-
-        public async Task<int> InsertEdgeAlgByCase(CycleModel edgeCase, AlgorithmModel newAlgorithm)
+        public async Task<int> DeleteAlg(AlgorithmModel algorithm)
         {
-            var foundCase = CubeLogic.FindEdgeCase(newAlgorithm.Algorithm);
-            if (foundCase.Buffer != null)
+            int id = await GetCaseId(await CorrectCase(algorithm.Case));
+            switch (algorithm.Case)
             {
-                var trueCase = await CorrectEdgeCaseCycle(foundCase);
-                var correctedEdgeCase = await CorrectEdgeCaseCycle(edgeCase);
-                if (trueCase.Buffer == correctedEdgeCase.Buffer && trueCase.First == correctedEdgeCase.First && trueCase.Second == correctedEdgeCase.Second)
-                {
-                    DynamicParameters p = new DynamicParameters();
-                    p.Add("Buffer", trueCase.Buffer);
-                    p.Add("First", trueCase.First);
-                    p.Add("Second", trueCase.Second);
-                    p.Add("Algorithm", newAlgorithm.Algorithm);
-                    p.Add("Id", DbType.Int32, direction: ParameterDirection.Output);
-                    await _dataAccess.SaveData("dbo.spEdgeAlgorithms_InsertByCycle", p, _connectionString.SqlConnectionName);
-                    return p.Get<int>("Id");
-                }
-                else return 0;
-            }
-            else return 0;
-        }
-
-        public async Task<int> InsertCornerAlg(AlgorithmModel newAlgorithm)
-        {
-            var foundCase = CubeLogic.FindCornerCase(newAlgorithm.Algorithm);
-            if (foundCase.Buffer != string.Empty)
-            {
-                var trueCase = await CorrectCornerCaseCycle(foundCase);
-                DynamicParameters p = new DynamicParameters();
-                p.Add("Buffer", trueCase.Buffer);
-                p.Add("First", trueCase.First);
-                p.Add("Second", trueCase.Second);
-                p.Add("Algorithm", newAlgorithm.Algorithm);
-                p.Add("Id", DbType.Int32, direction: ParameterDirection.Output);
-
-                await _dataAccess.SaveData("dbo.spCornerAlgorithms_InsertByCycle", p, _connectionString.SqlConnectionName);
-                return p.Get<int>("Id");
-            }
-            else return 0;
-
-        }
-
-        public async Task<int> InsertCornerAlgByCase(CycleModel cornerCase, AlgorithmModel newAlgorithm)
-        {
-            var foundCase = CubeLogic.FindCornerCase(newAlgorithm.Algorithm);
-            if (foundCase.Buffer != null)
-            {
-                var trueCase = await CorrectCornerCaseCycle(foundCase);
-                var correctedCornerCase = await CorrectCornerCaseCycle(cornerCase);
-                if (trueCase.Buffer == correctedCornerCase.Buffer && trueCase.First == correctedCornerCase.First && trueCase.Second == correctedCornerCase.Second)
-                {
-                    DynamicParameters p = new DynamicParameters();
-                    p.Add("Buffer", trueCase.Buffer);
-                    p.Add("First", trueCase.First);
-                    p.Add("Second", trueCase.Second);
-                    p.Add("Algorithm", newAlgorithm.Algorithm);
-                    p.Add("Id", DbType.Int32, direction: ParameterDirection.Output);
-                    await _dataAccess.SaveData("dbo.spCornerAlgorithms_InsertByCycle", p, _connectionString.SqlConnectionName);
-                    return p.Get<int>("Id");
-                }
-                else return 0;
-            }
-            else return 0;
-        }
-
-        public async Task<int> DeleteEdgeAlg(int algId)
-        {
-            return await _dataAccess.SaveData("dbo.spEdgeAlgorithms_Delete",
+                case EdgeCycleModel:
+                    {
+                        return await _dataAccess.SaveData("dbo.spEdgeAlgorithms_Delete",
                                         new
                                         {
-                                            Id = algId
+                                            Id = id
                                         },
                                         _connectionString.SqlConnectionName);
-        }
-
-        public async Task<int> DeleteCornerAlg(int algId)
-        {
-            return await _dataAccess.SaveData("dbo.spCornerAlgorithms_Delete",
+                    }
+                case CornerCycleModel:
+                    {
+                        return await _dataAccess.SaveData("dbo.spCornerAlgorithms_Delete",
                                         new
                                         {
-                                            Id = algId
+                                            Id = id
                                         },
                                         _connectionString.SqlConnectionName);
-        }
+                    }
+                case ParityModel:
+                    {
+                        return await _dataAccess.SaveData("dbo.spParityAlgorithms_Delete",
+                                        new
+                                        {
+                                            Id = id
+                                        },
+                                        _connectionString.SqlConnectionName);
+                    }
+                default:
+                    return 0;
+            }
 
-        public async Task<int> GetEdgeCaseId(CycleModel edgeCase)
+        }
+        public async Task<int> GetCaseId(CaseModel caseModel)
         {
-            return (await _dataAccess.LoadData<int, dynamic>("dbo.spEdgeCases_GetId",
+            switch (caseModel)
+            {
+                case EdgeCycleModel edgeCase:
+                    {
+                        return (await _dataAccess.LoadData<int, dynamic>("dbo.spEdgeCases_GetId",
                                                                        new { Buffer = edgeCase.Buffer, First = edgeCase.First, Second = edgeCase.Second },
                                                                        _connectionString.SqlConnectionName)).FirstOrDefault();
-        }
-
-        public async Task<int> GetCornerCaseId(CycleModel cornerCase)
-        {
-            return (await _dataAccess.LoadData<int, dynamic>("dbo.spCornerCases_GetId",
+                    }
+                case CornerCycleModel cornerCase:
+                    {
+                        return (await _dataAccess.LoadData<int, dynamic>("dbo.spCornerCases_GetId",
                                                                        new { Buffer = cornerCase.Buffer, First = cornerCase.First, Second = cornerCase.Second },
                                                                        _connectionString.SqlConnectionName)).FirstOrDefault();
+                    }
+                case ParityModel parityCase:
+                    {
+                        return (await _dataAccess.LoadData<int, dynamic>("dbo.spParityCases_GetId",
+                                                                         new { FirstEdge = parityCase.FirstEdge, SecondEdge = parityCase.SecondEdge, FirstCorner = parityCase.FirstCorner, SecondCorner = parityCase.SecondCorner },
+                                                                         _connectionString.SqlConnectionName)).FirstOrDefault();
+                    }
+                default:
+                    return 0;
+            }
         }
 
     }
