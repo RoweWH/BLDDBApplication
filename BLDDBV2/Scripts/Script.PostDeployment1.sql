@@ -2477,7 +2477,7 @@ begin
     insert into EdgeCycles values ((select Id from EdgePieces where Piece = 'DF'), (select Id from EdgePieces where Piece = 'RB'), (select Id from EdgePieces where Piece = 'RD')); 
     insert into EdgeCycles values ((select Id from EdgePieces where Piece = 'DF'), (select Id from EdgePieces where Piece = 'RB'), (select Id from EdgePieces where Piece = 'RF')); 
     insert into EdgeCycles values ((select Id from EdgePieces where Piece = 'DF'), (select Id from EdgePieces where Piece = 'RB'), (select Id from EdgePieces where Piece = 'BL')); 
-    insert into EdgeCycles values ((select Id from EdgePieces where Piece = 'DF'), (select Id from EdgePieces where Piece = 'RB'), (select Id from EdgePieces where Piece = 'BR')); 
+    insert into EdgeCycles values ((select Id from EdgePieces where Piece = 'DF'), (select Id from EdgePieces where Piece = 'RB'), (select Id from EdgePieces where Piece = 'BD')); 
     insert into EdgeCycles values ((select Id from EdgePieces where Piece = 'DF'), (select Id from EdgePieces where Piece = 'RB'), (select Id from EdgePieces where Piece = 'DR')); 
     insert into EdgeCycles values ((select Id from EdgePieces where Piece = 'DF'), (select Id from EdgePieces where Piece = 'RB'), (select Id from EdgePieces where Piece = 'DB')); 
     insert into EdgeCycles values ((select Id from EdgePieces where Piece = 'DF'), (select Id from EdgePieces where Piece = 'RB'), (select Id from EdgePieces where Piece = 'DL')); 
@@ -2869,25 +2869,4 @@ begin
     insert into EdgeCycles values ((select Id from EdgePieces where Piece = 'DL'), (select Id from EdgePieces where Piece = 'BR'), (select Id from EdgePieces where Piece = 'BL')); 
 
     /*UFUR Parity Cases*/
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'UFL')); 
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'UBL'));
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'UBR'));
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'FDL'));
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'FUL'));
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'FDR'));
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'LDB'));
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'LUB'));
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'LUF'));
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'LDF'));
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'BDR'));
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'BUR'));
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'BUL'));
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'BDL'));
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'RDF'));
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'RUB'));
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'RDB'));
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'DBL'));
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'DFL'));
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'DFR'));
-    insert into ParityCases values ((select Id from EdgePieces where Piece = 'UF'), (select Id from EdgePieces where Piece = 'UR'), (select Id from CornerPieces where Piece = 'UFR'), (select Id from CornerPieces where Piece = 'DBR'));
 end

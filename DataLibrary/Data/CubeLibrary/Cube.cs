@@ -41,308 +41,308 @@ namespace DataLibrary.Data.CubeLibrary
             Centers = (string[])SolvedCube.Centers.Clone();
         }
         //Perform turn to cube using tables from SolvedCube
-        public void turnCube(string turn)
+        public bool turnCube(string turn)
         {
             switch (turn)
             {
                 case "R":
                     applyFaceTurn(SolvedCube.tableR);
-                    break;
+                    return true;
                 case "F":
                     applyFaceTurn(SolvedCube.tableF);
-                    break;
+                    return true;
                 case "L":
                     applyFaceTurn(SolvedCube.tableL);
-                    break;
+                    return true;
                 case "B":
                     applyFaceTurn(SolvedCube.tableB);
-                    break;
+                    return true;
                 case "U":
                     applyFaceTurn(SolvedCube.tableU);
-                    break;
+                    return true;
                 case "D":
                     applyFaceTurn(SolvedCube.tableD);
-                    break;
+                    return true;
                 case "R'":
                     for (int i = 0; i < 3; i++)
                     {
                         applyFaceTurn(SolvedCube.tableR);
                     }
-                    break;
+                    return true;
                 case "F'":
                     for (int i = 0; i < 3; i++)
                     {
                         applyFaceTurn(SolvedCube.tableF);
                     }
-                    break;
+                    return true;
                 case "L'":
                     for (int i = 0; i < 3; i++)
                     {
                         applyFaceTurn(SolvedCube.tableL);
                     }
-                    break;
+                    return true;
                 case "B'":
                     for (int i = 0; i < 3; i++)
                     {
                         applyFaceTurn(SolvedCube.tableB);
                     }
-                    break;
+                    return true;
                 case "U'":
                     for (int i = 0; i < 3; i++)
                     {
                         applyFaceTurn(SolvedCube.tableU);
                     }
-                    break;
+                    return true;
                 case "D'":
                     for (int i = 0; i < 3; i++)
                     {
                         applyFaceTurn(SolvedCube.tableD);
                     }
-                    break;
+                    return true;
                 case "R2":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableR);
                     }
-                    break;
+                    return true;
                 case "F2":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableF);
                     }
-                    break;
+                    return true;
                 case "L2":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableL);
                     }
-                    break;
+                    return true;
                 case "B2":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableB);
                     }
-                    break;
+                    return true;
                 case "U2":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableU);
                     }
-                    break;
+                    return true;
                 case "D2":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableD);
                     }
-                    break;
+                    return true;
                 case "R2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableR);
                     }
-                    break;
+                    return true;
                 case "F2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableF);
                     }
-                    break;
+                    return true;
                 case "L2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableL);
                     }
-                    break;
+                    return true;
                 case "B2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableB);
                     }
-                    break;
+                    return true;
                 case "U2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableU);
                     }
-                    break;
+                    return true;
                 case "D2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableD);
                     }
-                    break;
+                    return true;
                 case "E":
                     applySliceTurn(SolvedCube.tableE);
-                    break;
+                    return true;
                 case "S":
                     applySliceTurn(SolvedCube.tableS);
-                    break;
+                    return true;
                 case "M":
                     applySliceTurn(SolvedCube.tableM);
-                    break;
+                    return true;
                 case "E'":
                     for (int i = 0; i < 3; i++)
                     {
                         applySliceTurn(SolvedCube.tableE);
                     }
-                    break;
+                    return true;
                 case "S'":
                     for (int i = 0; i < 3; i++)
                     {
                         applySliceTurn(SolvedCube.tableS);
                     }
-                    break;
+                    return true;
                 case "M'":
                     for (int i = 0; i < 3; i++)
                     {
                         applySliceTurn(SolvedCube.tableM);
                     }
-                    break;
+                    return true;
                 case "E2":
                     for (int i = 0; i < 2; i++)
                     {
                         applySliceTurn(SolvedCube.tableE);
                     }
-                    break;
+                    return true;
                 case "S2":
                     for (int i = 0; i < 2; i++)
                     {
                         applySliceTurn(SolvedCube.tableS);
                     }
-                    break;
+                    return true;
                 case "M2":
                     for (int i = 0; i < 2; i++)
                     {
                         applySliceTurn(SolvedCube.tableM);
                     }
-                    break;
+                    return true;
                 case "E2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applySliceTurn(SolvedCube.tableE);
                     }
-                    break;
+                    return true;
                 case "S2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applySliceTurn(SolvedCube.tableS);
                     }
-                    break;
+                    return true;
                 case "M2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applySliceTurn(SolvedCube.tableM);
                     }
-                    break;
+                    return true;
                 case "Uw":
                     applyFaceTurn(SolvedCube.tableU);
                     for (int i = 0; i < 3; i++)
                     {
                         applySliceTurn(SolvedCube.tableE);
                     }
-                    break;
+                    return true;
                 case "Uw'":
                     for (int i = 0; i < 3; i++)
                     {
                         applyFaceTurn(SolvedCube.tableU);
                     }
                     applySliceTurn(SolvedCube.tableE);
-                    break;
+                    return true;
                 case "Uw2":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableU);
                         applySliceTurn(SolvedCube.tableE);
                     }
-                    break;
+                    return true;
                 case "Uw2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableU);
                         applySliceTurn(SolvedCube.tableE);
                     }
-                    break;
+                    return true;
                 case "Dw'":
                     for (int i = 0; i < 3; i++)
                     {
                         applyFaceTurn(SolvedCube.tableD);
                         applySliceTurn(SolvedCube.tableE);
                     }
-                    break;
+                    return true;
                 case "Dw":
                     {
                         applyFaceTurn(SolvedCube.tableD);
                         applySliceTurn(SolvedCube.tableE);
                     }
-                    break;
+                    return true;
                 case "Dw2":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableD);
                         applySliceTurn(SolvedCube.tableE);
                     }
-                    break;
+                    return true;
                 case "Dw2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableD);
                         applySliceTurn(SolvedCube.tableE);
                     }
-                    break;
+                    return true;
                 case "Fw'":
                     for (int i = 0; i < 3; i++)
                     {
                         applyFaceTurn(SolvedCube.tableF);
                         applySliceTurn(SolvedCube.tableS);
                     }
-                    break;
+                    return true;
                 case "Fw":
                     {
                         applyFaceTurn(SolvedCube.tableF);
                         applySliceTurn(SolvedCube.tableS);
                     }
-                    break;
+                    return true;
                 case "Fw2":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableF);
                         applySliceTurn(SolvedCube.tableS);
                     }
-                    break;
+                    return true;
                 case "Fw2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableF);
                         applySliceTurn(SolvedCube.tableS);
                     }
-                    break;
+                    return true;
                 case "Lw'":
                     for (int i = 0; i < 3; i++)
                     {
                         applyFaceTurn(SolvedCube.tableL);
                         applySliceTurn(SolvedCube.tableM);
                     }
-                    break;
+                    return true;
                 case "Lw":
                     {
                         applyFaceTurn(SolvedCube.tableL);
                         applySliceTurn(SolvedCube.tableM);
                     }
-                    break;
+                    return true;
                 case "Lw2":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableL);
                         applySliceTurn(SolvedCube.tableM);
                     }
-                    break;
+                    return true;
                 case "Lw2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableL);
                         applySliceTurn(SolvedCube.tableM);
                     }
-                    break;
+                    return true;
                 case "Bw'":
                     applySliceTurn(SolvedCube.tableS);
                     for (int i = 0; i < 3; i++)
@@ -350,7 +350,7 @@ namespace DataLibrary.Data.CubeLibrary
                         applyFaceTurn(SolvedCube.tableB);
 
                     }
-                    break;
+                    return true;
                 case "Bw":
                     {
                         applyFaceTurn(SolvedCube.tableB);
@@ -360,28 +360,28 @@ namespace DataLibrary.Data.CubeLibrary
                         }
 
                     }
-                    break;
+                    return true;
                 case "Bw2":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableB);
                         applySliceTurn(SolvedCube.tableS);
                     }
-                    break;
+                    return true;
                 case "Bw2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableB);
                         applySliceTurn(SolvedCube.tableS);
                     }
-                    break;
+                    return true;
                 case "Rw'":
                     for (int i = 0; i < 3; i++)
                     {
                         applyFaceTurn(SolvedCube.tableR);
                     }
                     applySliceTurn(SolvedCube.tableM);
-                    break;
+                    return true;
                 case "Rw":
                     {
                         applyFaceTurn(SolvedCube.tableR);
@@ -391,130 +391,130 @@ namespace DataLibrary.Data.CubeLibrary
                         }
 
                     }
-                    break;
+                    return true;
                 case "Rw2":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableR);
                         applySliceTurn(SolvedCube.tableM);
                     }
-                    break;
+                    return true;
                 case "Rw2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableR);
                         applySliceTurn(SolvedCube.tableM);
                     }
-                    break;
+                    return true;
                 case "u":
                     applyFaceTurn(SolvedCube.tableU);
                     for (int i = 0; i < 3; i++)
                     {
                         applySliceTurn(SolvedCube.tableE);
                     }
-                    break;
+                    return true;
                 case "u'":
                     for (int i = 0; i < 3; i++)
                     {
                         applyFaceTurn(SolvedCube.tableU);
                     }
                     applySliceTurn(SolvedCube.tableE);
-                    break;
+                    return true;
                 case "u2":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableU);
                         applySliceTurn(SolvedCube.tableE);
                     }
-                    break;
+                    return true;
                 case "u2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableU);
                         applySliceTurn(SolvedCube.tableE);
                     }
-                    break;
+                    return true;
                 case "d'":
                     for (int i = 0; i < 3; i++)
                     {
                         applyFaceTurn(SolvedCube.tableD);
                         applySliceTurn(SolvedCube.tableE);
                     }
-                    break;
+                    return true;
                 case "d":
                     {
                         applyFaceTurn(SolvedCube.tableD);
                         applySliceTurn(SolvedCube.tableE);
                     }
-                    break;
+                    return true;
                 case "d2":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableD);
                         applySliceTurn(SolvedCube.tableE);
                     }
-                    break;
+                    return true;
                 case "d2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableD);
                         applySliceTurn(SolvedCube.tableE);
                     }
-                    break;
+                    return true;
                 case "f'":
                     for (int i = 0; i < 3; i++)
                     {
                         applyFaceTurn(SolvedCube.tableF);
                         applySliceTurn(SolvedCube.tableS);
                     }
-                    break;
+                    return true;
                 case "f":
                     {
                         applyFaceTurn(SolvedCube.tableF);
                         applySliceTurn(SolvedCube.tableS);
                     }
-                    break;
+                    return true;
                 case "f2":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableF);
                         applySliceTurn(SolvedCube.tableS);
                     }
-                    break;
+                    return true;
                 case "f2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableF);
                         applySliceTurn(SolvedCube.tableS);
                     }
-                    break;
+                    return true;
                 case "l'":
                     for (int i = 0; i < 3; i++)
                     {
                         applyFaceTurn(SolvedCube.tableL);
                         applySliceTurn(SolvedCube.tableM);
                     }
-                    break;
+                    return true;
                 case "l":
                     {
                         applyFaceTurn(SolvedCube.tableL);
                         applySliceTurn(SolvedCube.tableM);
                     }
-                    break;
+                    return true;
                 case "l2":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableL);
                         applySliceTurn(SolvedCube.tableM);
                     }
-                    break;
+                    return true;
                 case "l2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableL);
                         applySliceTurn(SolvedCube.tableM);
                     }
-                    break;
+                    return true;
                 case "b'":
                     applySliceTurn(SolvedCube.tableS);
                     for (int i = 0; i < 3; i++)
@@ -522,7 +522,7 @@ namespace DataLibrary.Data.CubeLibrary
                         applyFaceTurn(SolvedCube.tableB);
 
                     }
-                    break;
+                    return true;
                 case "b":
                     {
                         applyFaceTurn(SolvedCube.tableB);
@@ -532,28 +532,28 @@ namespace DataLibrary.Data.CubeLibrary
                         }
 
                     }
-                    break;
+                    return true;
                 case "b2":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableB);
                         applySliceTurn(SolvedCube.tableS);
                     }
-                    break;
+                    return true;
                 case "b2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableB);
                         applySliceTurn(SolvedCube.tableS);
                     }
-                    break;
+                    return true;
                 case "r'":
                     for (int i = 0; i < 3; i++)
                     {
                         applyFaceTurn(SolvedCube.tableR);
                     }
                     applySliceTurn(SolvedCube.tableM);
-                    break;
+                    return true;
                 case "r":
                     {
                         applyFaceTurn(SolvedCube.tableR);
@@ -563,21 +563,23 @@ namespace DataLibrary.Data.CubeLibrary
                         }
 
                     }
-                    break;
+                    return true;
                 case "r2":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableR);
                         applySliceTurn(SolvedCube.tableM);
                     }
-                    break;
+                    return true;
                 case "r2'":
                     for (int i = 0; i < 2; i++)
                     {
                         applyFaceTurn(SolvedCube.tableR);
                         applySliceTurn(SolvedCube.tableM);
                     }
-                    break;
+                    return true;
+                default:
+                    return false;
             }
         }
         //Orient piece based on direction given

@@ -72,10 +72,10 @@ namespace DataLibrary.Data.CubeLibrary
             return moveList.ToArray();
         }
 
-        public static string RemoveBrackets(string input)
+        public static string RemoveBrackets(string algorithm)
         {
             var sb = new StringBuilder();
-            foreach (var c in input)
+            foreach (var c in algorithm)
             {
                 if (c != '[' && c != ']')
                 {
@@ -85,6 +85,22 @@ namespace DataLibrary.Data.CubeLibrary
             return sb.ToString();
         }
 
+        public static string[] FixDoubles(string[] moveArray)
+        {
+            List<string> moveList = new List<string>();
+            foreach(var m in moveArray)
+            {
+                if (m.Contains("2'"))
+                {
+                    moveList.Add(m.Replace("2'", "2"));
+                }
+                else
+                {
+                    moveList.Add(m);
+                }      
+            }
+            return moveList.ToArray();
+        }
 
         public static string ExpandAlgorithm(string algorithm)
         {
@@ -94,37 +110,37 @@ namespace DataLibrary.Data.CubeLibrary
                 int index = algorithm.IndexOf(':');
                 string setupString = algorithm.Substring(0, index).Trim();
                 algorithm = algorithm.Substring(index + 1).Trim();
-                setupList = RemoveBrackets(setupString.Split(" "));
+                setupList = RemoveBrackets(FixDoubles(setupString.Split(" ")));
             }
             if (algorithm.Contains(','))
             {
                 int index = algorithm.IndexOf(',');
                 string interchangeString = algorithm.Substring(0, index).Trim();
                 string insertString = algorithm.Substring(index + 1).Trim();
-                string[] interchangeList = RemoveBrackets(interchangeString.Split(" "));
-                string[] insertList = RemoveBrackets(insertString.Split(" "));
-                return CreateString(setupList)
+                string[] interchangeList = RemoveBrackets(FixDoubles(interchangeString.Split(" ")));
+                string[] insertList = RemoveBrackets(FixDoubles(insertString.Split(" ")));
+                return (CreateString(setupList)
                     + CreateString(interchangeList)
                     + CreateString(insertList)
                     + CreateInverseString(interchangeList)
                     + CreateInverseString(insertList)
-                    + CreateInverseString(setupList);
+                    + CreateInverseString(setupList)).Trim();
             }
             else if (algorithm.Contains('/'))
             {
                 int index = algorithm.IndexOf('/');
                 string doubleInterchange = algorithm.Substring(0, index).Trim() + " ";
                 string insertString = algorithm.Substring(index + 1).Trim();
-                string[] doubleInterchangeList = RemoveBrackets(doubleInterchange.Split(" "));
-                string[] insertList = RemoveBrackets(insertString.Split(" "));
-                return CreateString(setupList)
+                string[] doubleInterchangeList = RemoveBrackets(FixDoubles(doubleInterchange.Split(" ")));
+                string[] insertList = RemoveBrackets(FixDoubles(insertString.Split(" ")));
+                return (CreateString(setupList)
                     + doubleInterchange
                     + CreateString(insertList)
                     + doubleInterchange
                     + doubleInterchange
                     + CreateInverseString(insertList)
                     + doubleInterchange
-                    + CreateInverseString(setupList);
+                    + CreateInverseString(setupList)).Trim();
             }
             else if (algorithm.Contains(")2") || algorithm.Contains(")x2") || algorithm.Contains("x2") || algorithm.Contains(") 2") || algorithm.Contains(") x2"))
             {
@@ -149,13 +165,13 @@ namespace DataLibrary.Data.CubeLibrary
                     index = algorithm.IndexOf(") x2");
                 }
                 string doubledAlgorithm = algorithm.Substring(0, index).Trim() + " " + algorithm.Substring(0, index).Trim();
-                string[] doubledAlgorithmList = RemoveBrackets(doubledAlgorithm.Split(" "));
-                return CreateString(doubledAlgorithmList);
+                string[] doubledAlgorithmList = RemoveBrackets(FixDoubles(doubledAlgorithm.Split(" ")));
+                return (CreateString(setupList) + CreateString(doubledAlgorithmList) + CreateInverseString(setupList)).Trim();
             }
             else
             {
-                string[] algorithmList = RemoveBrackets(algorithm.Split(" "));
-                return CreateString(algorithmList);
+                string[] algorithmList = RemoveBrackets(FixDoubles(algorithm.Split(" ")));
+                return (CreateString(setupList) + CreateString(algorithmList) + CreateInverseString(setupList)).Trim();
             }
         }
         
@@ -300,11 +316,16 @@ namespace DataLibrary.Data.CubeLibrary
         {
             string expandedAlgorithm = ExpandAlgorithm(algorithm);
             var moves = expandedAlgorithm.Split(' ');
-            var inverseMoves = CreateInverseString(moves).Split(' ');
+            var inverseMovesString = CreateInverseString(moves).Trim();
+            var inverseMoves = inverseMovesString.Split(' ');
             Cube newCube = new Cube();
             foreach(var m in inverseMoves)
             {
-                newCube.turnCube(m);
+                bool isValidTurn = newCube.turnCube(m);
+                if (!isValidTurn)
+                {
+                    return new CaseModel();
+                }
             }
             return CaseTracer(newCube);
 
