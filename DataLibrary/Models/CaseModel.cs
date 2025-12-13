@@ -9,6 +9,7 @@ namespace DataLibrary.Models
     public class CaseModel
     {
         public int Id { get; set; }
+        public List<AlgorithmModel> Algorithms { get; set; } = new List<AlgorithmModel>(); 
         public CaseModel()
         {
 

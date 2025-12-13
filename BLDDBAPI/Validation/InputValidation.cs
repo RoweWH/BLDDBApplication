@@ -89,5 +89,57 @@ namespace BLDAPI.Validation
 
             return true;
         }
+
+        public static bool IsValidParityRequest(ParityModel parityCase)
+        {
+            List<string> validEdges = SolvedCube.Edges.ToList();
+            List<string> validCorners = SolvedCube.Corners.ToList();
+            if (validEdges.Contains(parityCase.FirstEdge))
+            {
+                validEdges.Remove(parityCase.FirstEdge);
+            }
+            else if (validEdges.Contains(CubeLogic.FlipEdge(parityCase.FirstEdge)))
+            {
+                validEdges.Remove(CubeLogic.FlipEdge(parityCase.FirstEdge));
+            }
+            else return false;
+            if (validEdges.Contains(parityCase.SecondEdge))
+            {
+                validEdges.Remove(parityCase.SecondEdge);
+            }
+            else if (validEdges.Contains(CubeLogic.FlipEdge(parityCase.SecondEdge)))
+            {
+                validEdges.Remove(CubeLogic.FlipEdge(parityCase.SecondEdge));
+            }
+            else return false;
+            if (validCorners.Contains(parityCase.FirstCorner))
+            {
+                validCorners.Remove(parityCase.FirstCorner);
+            }
+            else if (validCorners.Contains(CubeLogic.TwistCorner(parityCase.FirstCorner)))
+            {
+                validCorners.Remove(CubeLogic.TwistCorner(parityCase.FirstCorner));
+            }
+            else if (validCorners.Contains(CubeLogic.TwistCorner(CubeLogic.TwistCorner(parityCase.FirstCorner))))
+            {
+                validCorners.Remove(CubeLogic.TwistCorner(CubeLogic.TwistCorner(parityCase.FirstCorner)));
+            }
+            else return false;
+            if (validCorners.Contains(parityCase.SecondCorner))
+            {
+                validCorners.Remove(parityCase.SecondCorner);
+            }
+            else if (validCorners.Contains(CubeLogic.TwistCorner(parityCase.SecondCorner)))
+            {
+                validCorners.Remove(CubeLogic.TwistCorner(parityCase.SecondCorner));
+            }
+            else if (validCorners.Contains(CubeLogic.TwistCorner(CubeLogic.TwistCorner(parityCase.SecondCorner))))
+            {
+                validCorners.Remove(CubeLogic.TwistCorner(CubeLogic.TwistCorner(parityCase.SecondCorner)));
+            }
+            else return false;
+
+            return true;
+        }
     }
 }

@@ -71,7 +71,21 @@ namespace DataLibrary.Data.CubeLibrary
             }
             return moveList.ToArray();
         }
-        
+
+        public static string RemoveBrackets(string input)
+        {
+            var sb = new StringBuilder();
+            foreach (var c in input)
+            {
+                if (c != '[' && c != ']')
+                {
+                    sb.Append(c);
+                }
+            }
+            return sb.ToString();
+        }
+
+
         public static string ExpandAlgorithm(string algorithm)
         {
             string[] setupList = Array.Empty<string>();
@@ -282,17 +296,15 @@ namespace DataLibrary.Data.CubeLibrary
             return new CaseModel();
         }
 
-        public static CaseModel FindCase(AlgorithmModel algorithm)
+        public static CaseModel FindCase(string algorithm)
         {
-            string expandedAlgorithm = ExpandAlgorithm(algorithm.Algorithm);
+            string expandedAlgorithm = ExpandAlgorithm(algorithm);
             var moves = expandedAlgorithm.Split(' ');
+            var inverseMoves = CreateInverseString(moves).Split(' ');
             Cube newCube = new Cube();
-            for (int i = 0; i < 2; i++)
+            foreach(var m in inverseMoves)
             {
-                foreach (var m in moves)
-                {
-                    newCube.turnCube(m);
-                }
+                newCube.turnCube(m);
             }
             return CaseTracer(newCube);
 
