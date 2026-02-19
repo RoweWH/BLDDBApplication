@@ -327,6 +327,8 @@ namespace DataLibrary.Data.CubeLibrary
                     return new CaseModel();
                 }
             }
+            //fix centers at end of algorithm, for wide moves and rotations
+            newCube.fixCenters();
             return CaseTracer(newCube);
 
         }

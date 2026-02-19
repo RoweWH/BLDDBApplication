@@ -32,15 +32,20 @@ namespace DataLibrary.Data.CubeLibrary
         {
             foreach (var edge in Edges) Console.WriteLine(edge);
             foreach(var corner in Corners) Console.WriteLine(corner);
+            foreach(var center in Centers) Console.WriteLine(center);
         }
-        //set solved state based on SolvedCube
         public void setSolvedState()
         {
             Edges = (string[])SolvedCube.Edges.Clone();
             Corners = (string[])SolvedCube.Corners.Clone();
             Centers = (string[])SolvedCube.Centers.Clone();
         }
-        //Perform turn to cube using tables from SolvedCube
+        public void fixCenters()
+        {
+            if (Centers[2] == "U" || Centers[2] == "D") turnCube("z");
+            while (Centers[0] != "U") turnCube("x");
+            while (Centers[1] != "F") turnCube("y");
+        }
         public bool turnCube(string turn)
         {
             switch (turn)
@@ -578,14 +583,119 @@ namespace DataLibrary.Data.CubeLibrary
                         applySliceTurn(SolvedCube.tableM);
                     }
                     return true;
+                case "x'":
+                    for (int i = 0; i < 3; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableR);
+                    }
+                    applySliceTurn(SolvedCube.tableM);
+                    applyFaceTurn(SolvedCube.tableL);
+                    return true;
+                case "x":
+                    {
+                        applyFaceTurn(SolvedCube.tableR);
+                        for (int i = 0; i < 3; i++)
+                        {
+                            applySliceTurn(SolvedCube.tableM);
+                            applyFaceTurn(SolvedCube.tableL);
+                        }
+
+                    }
+                    return true;
+                case "x2":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableR);
+                        applySliceTurn(SolvedCube.tableM);
+                        applyFaceTurn(SolvedCube.tableL);
+                    }
+                    return true;
+                case "x2'":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableR);
+                        applySliceTurn(SolvedCube.tableM);
+                        applyFaceTurn(SolvedCube.tableL);
+                    }
+                    return true;
+                case "y'":
+                    for (int i = 0; i < 3; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableU);
+                    }
+                    applySliceTurn(SolvedCube.tableE);
+                    applyFaceTurn(SolvedCube.tableD);
+                    return true;
+                case "y":
+                    {
+                        applyFaceTurn(SolvedCube.tableU);
+                        for (int i = 0; i < 3; i++)
+                        {
+                            applySliceTurn(SolvedCube.tableE);
+                            applyFaceTurn(SolvedCube.tableD);
+                        }
+
+                    }
+                    return true;
+                case "y2":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableU);
+                        applySliceTurn(SolvedCube.tableE);
+                        applyFaceTurn(SolvedCube.tableD);
+                    }
+                    return true;
+                case "y2'":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableU);
+                        applySliceTurn(SolvedCube.tableE);
+                        applyFaceTurn(SolvedCube.tableD);
+
+                    }
+                    return true;
+                case "z'":
+                    for (int i = 0; i < 3; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableF);
+                        applySliceTurn(SolvedCube.tableS);
+                    }
+                    applyFaceTurn(SolvedCube.tableB);
+                    return true;
+                case "z":
+                    {
+                        applyFaceTurn(SolvedCube.tableF);
+                        applySliceTurn(SolvedCube.tableS);
+                        for (int i = 0; i < 3; i++)
+                        {
+                            applySliceTurn(SolvedCube.tableB);
+                        }
+
+                    }
+                    return true;
+                case "z2":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableF);
+                        applySliceTurn(SolvedCube.tableS);
+                        applyFaceTurn(SolvedCube.tableB);
+                    }
+                    return true;
+                case "z2'":
+                    for (int i = 0; i < 2; i++)
+                    {
+                        applyFaceTurn(SolvedCube.tableF);
+                        applySliceTurn(SolvedCube.tableS);
+                        applyFaceTurn(SolvedCube.tableB);
+                    }
+                    return true;
                 default:
                     return false;
             }
         }
-        //Orient piece based on direction given
         public string Orient(string piece, int direction)
         {
-            if (piece.Length == 2)//Edge
+            if (piece.Length == 2)
             {
                 if (direction == 1)
                 {
@@ -593,7 +703,7 @@ namespace DataLibrary.Data.CubeLibrary
                 }
                 else return piece;
             }
-            else if (piece.Length == 3)//Corner
+            else if (piece.Length == 3)
             {
                 if (direction == -1)
                 {
@@ -610,7 +720,6 @@ namespace DataLibrary.Data.CubeLibrary
             }
             else return piece;
         }
-        //Cycle and orient the pieces based on the table complete the turn
         public void applyFaceTurn(int[,] table)
         {
             string temp;
@@ -637,7 +746,6 @@ namespace DataLibrary.Data.CubeLibrary
 
 
         }
-        //Cycle and orient the pieces based on the table to complete the turn
         public void applySliceTurn(int[,] table)
         {
             string temp;
