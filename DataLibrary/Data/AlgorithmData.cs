@@ -174,7 +174,7 @@ namespace DataLibrary.Data
                             p.Add("Buffer", trueCase.Buffer);
                             p.Add("First", trueCase.First);
                             p.Add("Second", trueCase.Second);
-                            p.Add("Algorithm", CubeLogic.RemoveBrackets(CubeLogic.CreateString(CubeLogic.FixDoubles(newAlgorithm.Split(" ")))));
+                            p.Add("Algorithm", CubeLogic.FormatMoves(newAlgorithm));
                             p.Add("Id", DbType.Int32, direction: ParameterDirection.Output);
 
                             await _dataAccess.SaveData("dbo.spEdgeAlgorithms_InsertByCycle", p, _connectionString.SqlConnectionName);
@@ -196,7 +196,7 @@ namespace DataLibrary.Data
                             p.Add("Buffer", trueCase.Buffer);
                             p.Add("First", trueCase.First);
                             p.Add("Second", trueCase.Second);
-                            p.Add("Algorithm", CubeLogic.RemoveBrackets(CubeLogic.CreateString(CubeLogic.FixDoubles(newAlgorithm.Split(" ")))));
+                            p.Add("Algorithm", CubeLogic.FormatMoves(newAlgorithm));
                             p.Add("Id", DbType.Int32, direction: ParameterDirection.Output);
 
                             await _dataAccess.SaveData("dbo.spCornerAlgorithms_InsertByCycle", p, _connectionString.SqlConnectionName);
@@ -224,7 +224,7 @@ namespace DataLibrary.Data
                             p.Add("SecondEdge", trueCase.SecondEdge);
                             p.Add("FirstCorner", trueCase.FirstCorner);
                             p.Add("SecondCorner", trueCase.SecondCorner);
-                            p.Add("Algorithm", CubeLogic.RemoveBrackets(CubeLogic.CreateString(CubeLogic.FixDoubles(newAlgorithm.Split(" ")))));
+                            p.Add("Algorithm", CubeLogic.FormatMoves(newAlgorithm));
                             p.Add("Id", DbType.Int32, direction: ParameterDirection.Output);
                             await _dataAccess.SaveData("dbo.spParityAlgorithms_InsertByCase", p, _connectionString.SqlConnectionName);
                             return p.Get<int>("Id");
@@ -255,7 +255,7 @@ namespace DataLibrary.Data
                             p.Add("Buffer", givenCase.Buffer);
                             p.Add("First", givenCase.First);
                             p.Add("Second", givenCase.Second);
-                            p.Add("Algorithm", CubeLogic.RemoveBrackets(edgeCase.Algorithms[0].Algorithm));
+                            p.Add("Algorithm", CubeLogic.FormatMoves(edgeCase.Algorithms[0].Algorithm));
                             p.Add("Id", DbType.Int32, direction: ParameterDirection.Output);
                             await _dataAccess.SaveData("dbo.spEdgeAlgorithms_InsertByCycle", p, _connectionString.SqlConnectionName);
                             return p.Get<int>("Id");
@@ -272,7 +272,7 @@ namespace DataLibrary.Data
                             p.Add("Buffer", givenCase.Buffer);
                             p.Add("First", givenCase.First);
                             p.Add("Second", givenCase.Second);
-                            p.Add("Algorithm", CubeLogic.RemoveBrackets(cornerCase.Algorithms[0].Algorithm));
+                            p.Add("Algorithm", CubeLogic.FormatMoves(cornerCase.Algorithms[0].Algorithm));
                             p.Add("Id", DbType.Int32, direction: ParameterDirection.Output);
                             await _dataAccess.SaveData("dbo.spCornerAlgorithms_InsertByCycle", p, _connectionString.SqlConnectionName);
                             return p.Get<int>("Id");
@@ -290,7 +290,7 @@ namespace DataLibrary.Data
                             p.Add("SecondEdge", givenCase.SecondEdge);
                             p.Add("FirstCorner", givenCase.FirstCorner);
                             p.Add("SecondCorner", givenCase.SecondCorner);
-                            p.Add("Algorithm", CubeLogic.RemoveBrackets(parityCase.Algorithms[0].Algorithm));
+                            p.Add("Algorithm", CubeLogic.FormatMoves(parityCase.Algorithms[0].Algorithm));
                             p.Add("Id", DbType.Int32, direction: ParameterDirection.Output);
                             await _dataAccess.SaveData("dbo.spParityAlgorithms_InsertByCase", p, _connectionString.SqlConnectionName);
                             return p.Get<int>("Id");
