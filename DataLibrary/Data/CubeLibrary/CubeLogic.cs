@@ -354,9 +354,33 @@ namespace DataLibrary.Data.CubeLibrary
                     return new CaseModel();
                 }
             }
-            //fix centers at end of algorithm, for wide moves and rotations
-            newCube.fixCenters();
-            return CaseTracer(newCube);
+            if (newCube.CentersSolved())
+            {
+                return CaseTracer(newCube);
+            }
+            else
+            {
+                string[] prefix = newCube.GetCenterFix();
+                newCube = new Cube();
+                foreach (var p in prefix)
+                {
+                    bool isValidTurn = newCube.turnCube(p);
+                    if (!isValidTurn)
+                    {
+                        return new CaseModel(); 
+                    }
+                }
+                foreach (var m in inverseMoves)
+                {
+                    bool isValidTurn = newCube.turnCube(m);
+                    if (!isValidTurn)
+                    {
+                        return new CaseModel();
+                    }
+                }
+                return CaseTracer(newCube);
+            }
+            
 
         }
         public static string FlipEdge(string edge)

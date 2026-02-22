@@ -40,11 +40,30 @@ namespace DataLibrary.Data.CubeLibrary
             Corners = (string[])SolvedCube.Corners.Clone();
             Centers = (string[])SolvedCube.Centers.Clone();
         }
-        public void fixCenters()
+        public bool CentersSolved()
         {
-            if (Centers[2] == "U" || Centers[2] == "D") turnCube("z");
-            while (Centers[0] != "U") turnCube("x");
-            while (Centers[1] != "F") turnCube("y");
+            if (Centers[0] == "U" && Centers[1] == "F" && Centers[2] == "L") return true;
+            else return false;
+        }
+        public string[] GetCenterFix()
+        {
+            List<string> prefix = new List<string>();
+            if (Centers[2] == "U" || Centers[2] == "D")
+            {
+                prefix.Add("z");
+                turnCube("z");
+            }
+            while (Centers[0] != "U")
+            {
+                prefix.Add("x");
+                turnCube("x");
+            }
+            while (Centers[1] != "F")
+            {
+                prefix.Add("y");
+                turnCube("y");
+            }
+            return prefix.ToArray();
         }
         public bool turnCube(string turn)
         {
