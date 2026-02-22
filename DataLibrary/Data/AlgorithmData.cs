@@ -44,7 +44,7 @@ namespace DataLibrary.Data
                 case ParityModel parityCase:
                     {
                         return (await _dataAccess.LoadData<int, dynamic>("dbo.spParityCases_GetId",
-                                                                         new { FirstEdge = parityCase.FirstEdge, SecondEdge = parityCase.SecondEdge, FirstCorner = parityCase.FirstCorner, SecondCorner = parityCase.SecondCorner },
+                                                                         new { FirstEdge = parityCase.FirstEdge, SecondEdge = parityCase.SecondEdge, FirstCorner = parityCase.FirstCorner, SecondCorner = parityCase.SecondCorner, Twist = parityCase.Twist },
                                                                          _connectionString.SqlConnectionName)).FirstOrDefault();
                     }
                 default:
@@ -130,7 +130,7 @@ namespace DataLibrary.Data
                     {
                         ParityModel parityCase = (ParityModel)await CorrectCase(caseToLoad);
                         algorithms = await _dataAccess.LoadData<AlgorithmModel, dynamic>("dbo.spParityAlgorithms_GetByCase",
-                                                                   new { FirstEdge = parityCase.FirstEdge, SecondEdge = parityCase.SecondEdge, FirstCorner = parityCase.FirstCorner, SecondCorner = parityCase.SecondCorner },
+                                                                   new { FirstEdge = parityCase.FirstEdge, SecondEdge = parityCase.SecondEdge, FirstCorner = parityCase.FirstCorner, SecondCorner = parityCase.SecondCorner, Twist = parityCase.Twist },
                                                                    _connectionString.SqlConnectionName);
                         return algorithms;
                     }
@@ -224,6 +224,7 @@ namespace DataLibrary.Data
                             p.Add("SecondEdge", trueCase.SecondEdge);
                             p.Add("FirstCorner", trueCase.FirstCorner);
                             p.Add("SecondCorner", trueCase.SecondCorner);
+                            p.Add("Twist", trueCase.Twist);
                             p.Add("Algorithm", CubeLogic.FormatMoves(newAlgorithm));
                             p.Add("Id", DbType.Int32, direction: ParameterDirection.Output);
                             await _dataAccess.SaveData("dbo.spParityAlgorithms_InsertByCase", p, _connectionString.SqlConnectionName);
@@ -290,6 +291,7 @@ namespace DataLibrary.Data
                             p.Add("SecondEdge", givenCase.SecondEdge);
                             p.Add("FirstCorner", givenCase.FirstCorner);
                             p.Add("SecondCorner", givenCase.SecondCorner);
+                            p.Add("Twist", givenCase.Twist);
                             p.Add("Algorithm", CubeLogic.FormatMoves(parityCase.Algorithms[0].Algorithm));
                             p.Add("Id", DbType.Int32, direction: ParameterDirection.Output);
                             await _dataAccess.SaveData("dbo.spParityAlgorithms_InsertByCase", p, _connectionString.SqlConnectionName);
@@ -351,6 +353,7 @@ namespace DataLibrary.Data
                         p.Add("SecondEdge", parityCase.SecondEdge);
                         p.Add("FirstCorner", parityCase.FirstCorner);
                         p.Add("SecondCorner", parityCase.SecondCorner);
+                        p.Add("Twist", parityCase.Twist);
                         p.Add("Id", DbType.Int32, direction: ParameterDirection.Output);
                         await _dataAccess.SaveData("dbo.spParityCases_Add", p, _connectionString.SqlConnectionName);
                         return p.Get<int>("Id");

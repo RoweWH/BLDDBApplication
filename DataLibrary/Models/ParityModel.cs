@@ -13,23 +13,33 @@ namespace DataLibrary.Models
         public string SecondEdge { get; set; } = string.Empty;
         public string FirstCorner { get; set; } = string.Empty;
         public string SecondCorner { get; set; } = string.Empty;
+        public string Twist {  get; set; } = string.Empty;
         public ParityModel()
         {
         }
-        public ParityModel(string firstEdge, string secondEdge, string firstCorner, string secondCorner)
+        public void PrintCase()
+        {
+            Console.WriteLine(FirstEdge);
+            Console.WriteLine(SecondEdge);
+            Console.WriteLine(FirstCorner);
+            Console.WriteLine(SecondCorner);
+            Console.WriteLine(Twist);
+        }
+        public ParityModel(string firstEdge, string secondEdge, string firstCorner, string secondCorner, string? twist)
         {
             FirstEdge = firstEdge;
             SecondEdge = secondEdge;
             FirstCorner = firstCorner;
             SecondCorner = secondCorner;
+            Twist = twist;
         }
         public ParityModel ReorientEdges()
         {
-            return new ParityModel(CubeLogic.FlipEdge(FirstEdge), CubeLogic.FlipEdge(SecondEdge), FirstCorner, SecondCorner);
+            return new ParityModel(CubeLogic.FlipEdge(FirstEdge), CubeLogic.FlipEdge(SecondEdge), FirstCorner, SecondCorner, Twist);
         }
         public ParityModel ReorientCorners()
         {
-            return new ParityModel(FirstEdge, SecondEdge, CubeLogic.TwistCorner(FirstCorner), CubeLogic.TwistCorner(SecondCorner));
+            return new ParityModel(FirstEdge, SecondEdge, CubeLogic.TwistCorner(FirstCorner), CubeLogic.TwistCorner(SecondCorner), Twist);
         }
         public List<ParityModel> Variations()
         {
@@ -51,7 +61,8 @@ namespace DataLibrary.Models
             if (this.FirstEdge == otherCase.FirstEdge &&
                this.SecondEdge == otherCase.SecondEdge &&
                this.FirstCorner == otherCase.FirstCorner &&
-               this.SecondCorner == otherCase.SecondCorner)
+               this.SecondCorner == otherCase.SecondCorner &&
+               this.Twist == otherCase.Twist)
             {
                 return true;
             }

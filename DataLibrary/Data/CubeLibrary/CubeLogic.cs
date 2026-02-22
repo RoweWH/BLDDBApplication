@@ -1,5 +1,6 @@
 ﻿using DataLibrary.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -299,8 +300,26 @@ namespace DataLibrary.Data.CubeLibrary
                         if(cornerCycles.Count == 1 && cornerCycles[0].Count == 3)
                         {
                             //Parity case
-                            return new ParityModel(edgeCycles[0][0], edgeCycles[0][1], cornerCycles[0][0], cornerCycles[0][1]);
+                            return new ParityModel(edgeCycles[0][0], edgeCycles[0][1], cornerCycles[0][0], cornerCycles[0][1], null);
                         }
+                        else if(cornerCycles.Count == 2)
+                        {
+                            //LTCT, T2C
+                            if (cornerCycles[0].Count == 3 && cornerCycles[1].Count == 2)
+                            {
+                                string twist = cornerCycles[1][0];
+                                while (twist == cornerCycles[1][0] || twist == cornerCycles[1][1]) twist = TwistCorner(twist);
+                                return new ParityModel(edgeCycles[0][0], edgeCycles[0][1], cornerCycles[0][0], cornerCycles[0][1], twist);
+                            }
+                            else if (cornerCycles[0].Count == 2 && cornerCycles[1].Count == 3)
+                            {
+                                string twist = cornerCycles[0][0];
+                                while (twist == cornerCycles[0][0] || twist == cornerCycles[0][1]) twist = TwistCorner(twist);
+                                return new ParityModel(edgeCycles[0][0], edgeCycles[0][1], cornerCycles[1][0], cornerCycles[1][1], twist);
+                            }
+                            else return new ParityModel();
+                        }
+
                     }
                     else if (edgeCycles[0].Count == 4)
                     {

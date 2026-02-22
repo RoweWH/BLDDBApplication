@@ -21,9 +21,9 @@ namespace BLDAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get(string firstEdge, string secondEdge, string firstCorner, string secondCorner)
+        public async Task<IActionResult> Get(string firstEdge, string secondEdge, string firstCorner, string secondCorner, string? twist)
         {
-            ParityModel parityCase = new ParityModel(firstEdge, secondEdge, firstCorner, secondCorner);
+            ParityModel parityCase = new ParityModel(firstEdge, secondEdge, firstCorner, secondCorner, twist);
             if (InputValidation.IsValidParityRequest(parityCase))
             {
                 parityCase.Algorithms = await _algorithmData.LoadAlgorithms(parityCase);
