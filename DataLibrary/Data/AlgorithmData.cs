@@ -68,6 +68,7 @@ namespace DataLibrary.Data
                                 return edgeCase;
                             }
                         }
+                        return new EdgeCycleModel();
                         break;
                     }
 
@@ -83,6 +84,7 @@ namespace DataLibrary.Data
                                 return cornerCase;
                             }
                         }
+                        return new CornerCycleModel();
                         break;
                     }
                 case ParityModel parityCase:
@@ -97,6 +99,7 @@ namespace DataLibrary.Data
                                 return parityCase;
                             }
                         }
+                        return new ParityModel();
                         break;
                     }
                 default:
@@ -249,8 +252,8 @@ namespace DataLibrary.Data
                 case EdgeCycleModel edgeCase:
                     {
                         EdgeCycleModel givenCase = (EdgeCycleModel)await CorrectCase(edgeCase);
-                        EdgeCycleModel foundCase = (EdgeCycleModel)await CorrectCase(CubeLogic.FindCase(edgeCase.Algorithms[0].Algorithm));
-                        if (givenCase.Equals(foundCase))
+                        var foundCase = await CorrectCase(CubeLogic.FindCase(edgeCase.Algorithms[0].Algorithm));
+                        if (foundCase is EdgeCycleModel && givenCase.Equals((EdgeCycleModel)foundCase))
                         {
                             DynamicParameters p = new DynamicParameters();
                             p.Add("Buffer", givenCase.Buffer);
@@ -266,8 +269,8 @@ namespace DataLibrary.Data
                 case CornerCycleModel cornerCase:
                     {
                         CornerCycleModel givenCase = (CornerCycleModel)await CorrectCase(cornerCase);
-                        CornerCycleModel foundCase = (CornerCycleModel)await CorrectCase(CubeLogic.FindCase(cornerCase.Algorithms[0].Algorithm));
-                        if (givenCase.Equals(foundCase))
+                        var foundCase = await CorrectCase(CubeLogic.FindCase(cornerCase.Algorithms[0].Algorithm));
+                        if (foundCase is CornerCycleModel && givenCase.Equals((CornerCycleModel)foundCase))
                         {
                             DynamicParameters p = new DynamicParameters();
                             p.Add("Buffer", givenCase.Buffer);
@@ -283,8 +286,8 @@ namespace DataLibrary.Data
                 case ParityModel parityCase:
                     {
                         ParityModel givenCase = (ParityModel)await CorrectCase(parityCase);
-                        ParityModel foundCase = (ParityModel)await CorrectCase(CubeLogic.FindCase(parityCase.Algorithms[0].Algorithm));
-                        if (givenCase.Equals(foundCase))
+                        var foundCase = await CorrectCase(CubeLogic.FindCase(parityCase.Algorithms[0].Algorithm));
+                        if (foundCase is ParityModel && givenCase.Equals((ParityModel)foundCase))
                         {
                             DynamicParameters p = new DynamicParameters();
                             p.Add("FirstEdge", givenCase.FirstEdge);

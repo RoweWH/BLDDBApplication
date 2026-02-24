@@ -19,6 +19,7 @@ namespace DataLibrary.Models
             First = first;
             Second = second;
         }
+        public CornerCycleModel() { }
         public CornerCycleModel Reorient()
         {
             return new CornerCycleModel(CubeLogic.TwistCorner(Buffer), CubeLogic.TwistCorner(First), CubeLogic.TwistCorner(Second));

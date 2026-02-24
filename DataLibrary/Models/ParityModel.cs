@@ -41,18 +41,120 @@ namespace DataLibrary.Models
         {
             return new ParityModel(FirstEdge, SecondEdge, CubeLogic.TwistCorner(FirstCorner), CubeLogic.TwistCorner(SecondCorner), Twist);
         }
+        public ParityModel SwapEdges()
+        {
+            return new ParityModel(SecondEdge, FirstEdge, FirstCorner, SecondCorner, Twist);
+        }
+        public ParityModel SwapCorners()
+        {
+            return new ParityModel(FirstEdge, SecondEdge, SecondCorner, FirstCorner, Twist);
+        }
+        public ParityModel SwapCornersClockwise()
+        {
+            return new ParityModel(FirstEdge, SecondEdge, SecondCorner, CubeLogic.TwistCorner(FirstCorner), Twist);
+        }
+        public ParityModel SwapCornersCounterClockwise()
+        {
+            return new ParityModel(FirstEdge, SecondEdge, SecondCorner, CubeLogic.TwistCorner(CubeLogic.TwistCorner(FirstCorner)), Twist);
+        }
+        public int TwistDirection(string twist)
+        {
+            string copy = twist;
+            CubeLogic.TwistCorner(copy);
+            if (copy[0] == 'U' || copy[0] == 'D')
+            {
+                return 1;
+            }
+            else return -1;
+        }
         public List<ParityModel> Variations()
         {
             List<ParityModel> variations = new List<ParityModel>();
-            //All corner swap orientations with original edge swap orientation
             variations.Add(this);
-            variations.Add(this.ReorientCorners());
-            variations.Add(this.ReorientCorners().ReorientCorners());
-            //All corner swap orientations with flipped edge swap orientation
+            variations.Add(this.SwapEdges());
             variations.Add(this.ReorientEdges());
-            variations.Add(this.ReorientEdges().ReorientCorners());
-            variations.Add(this.ReorientEdges().ReorientCorners().ReorientCorners());
+            variations.Add(this.SwapEdges().ReorientEdges());
+            if(this.Twist == null)
+            {
+                variations.Add(this.SwapCorners());
+                variations.Add(this.SwapEdges().SwapCorners());
+                variations.Add(this.ReorientEdges().SwapCorners());
+                variations.Add(this.SwapEdges().ReorientEdges().SwapCorners());
 
+                variations.Add(this.ReorientCorners());
+                variations.Add(this.ReorientCorners().ReorientCorners());
+                variations.Add(this.ReorientCorners().SwapCorners());
+                variations.Add(this.ReorientCorners().ReorientCorners().SwapCorners());
+
+                variations.Add(this.SwapEdges().ReorientCorners());
+                variations.Add(this.SwapEdges().ReorientCorners().ReorientCorners());
+                variations.Add(this.SwapEdges().ReorientCorners().SwapCorners());
+                variations.Add(this.SwapEdges().ReorientCorners().ReorientCorners().SwapCorners());
+
+                variations.Add(this.ReorientEdges().ReorientCorners());
+                variations.Add(this.ReorientEdges().ReorientCorners().ReorientCorners());
+                variations.Add(this.ReorientEdges().ReorientCorners().SwapCorners());
+                variations.Add(this.ReorientEdges().ReorientCorners().ReorientCorners().SwapCorners());
+
+                variations.Add(this.SwapEdges().ReorientEdges().ReorientCorners());
+                variations.Add(this.SwapEdges().ReorientEdges().ReorientCorners().ReorientCorners());
+                variations.Add(this.SwapEdges().ReorientEdges().ReorientCorners().SwapCorners());
+                variations.Add(this.SwapEdges().ReorientEdges().ReorientCorners().ReorientCorners().SwapCorners());
+            }
+            else if(TwistDirection(this.Twist) == 1)
+            {
+                variations.Add(this.SwapCornersCounterClockwise());
+                variations.Add(this.SwapEdges().SwapCornersCounterClockwise());
+                variations.Add(this.ReorientEdges().SwapCornersCounterClockwise());
+                variations.Add(this.SwapEdges().ReorientEdges().SwapCornersCounterClockwise());
+
+                variations.Add(this.ReorientCorners());
+                variations.Add(this.ReorientCorners().ReorientCorners());
+                variations.Add(this.ReorientCorners().SwapCornersCounterClockwise());
+                variations.Add(this.ReorientCorners().ReorientCorners().SwapCornersCounterClockwise());
+
+                variations.Add(this.SwapEdges().ReorientCorners());
+                variations.Add(this.SwapEdges().ReorientCorners().ReorientCorners());
+                variations.Add(this.SwapEdges().ReorientCorners().SwapCornersCounterClockwise());
+                variations.Add(this.SwapEdges().ReorientCorners().ReorientCorners().SwapCornersCounterClockwise());
+
+                variations.Add(this.ReorientEdges().ReorientCorners());
+                variations.Add(this.ReorientEdges().ReorientCorners().ReorientCorners());
+                variations.Add(this.ReorientEdges().ReorientCorners().SwapCornersCounterClockwise());
+                variations.Add(this.ReorientEdges().ReorientCorners().ReorientCorners().SwapCornersCounterClockwise());
+
+                variations.Add(this.SwapEdges().ReorientEdges().ReorientCorners());
+                variations.Add(this.SwapEdges().ReorientEdges().ReorientCorners().ReorientCorners());
+                variations.Add(this.SwapEdges().ReorientEdges().ReorientCorners().SwapCornersCounterClockwise());
+                variations.Add(this.SwapEdges().ReorientEdges().ReorientCorners().ReorientCorners().SwapCornersCounterClockwise());
+            }
+            else if(TwistDirection(this.Twist) == -1)
+            {
+                variations.Add(this.SwapCornersClockwise());
+                variations.Add(this.SwapEdges().SwapCornersClockwise());
+                variations.Add(this.ReorientEdges().SwapCornersClockwise());
+                variations.Add(this.SwapEdges().ReorientEdges().SwapCornersClockwise());
+
+                variations.Add(this.ReorientCorners());
+                variations.Add(this.ReorientCorners().ReorientCorners());
+                variations.Add(this.ReorientCorners().SwapCornersClockwise());
+                variations.Add(this.ReorientCorners().ReorientCorners().SwapCornersClockwise());
+
+                variations.Add(this.SwapEdges().ReorientCorners());
+                variations.Add(this.SwapEdges().ReorientCorners().ReorientCorners());
+                variations.Add(this.SwapEdges().ReorientCorners().SwapCornersClockwise());
+                variations.Add(this.SwapEdges().ReorientCorners().ReorientCorners().SwapCornersClockwise());
+
+                variations.Add(this.ReorientEdges().ReorientCorners());
+                variations.Add(this.ReorientEdges().ReorientCorners().ReorientCorners());
+                variations.Add(this.ReorientEdges().ReorientCorners().SwapCornersClockwise());
+                variations.Add(this.ReorientEdges().ReorientCorners().ReorientCorners().SwapCornersClockwise());
+
+                variations.Add(this.SwapEdges().ReorientEdges().ReorientCorners());
+                variations.Add(this.SwapEdges().ReorientEdges().ReorientCorners().ReorientCorners());
+                variations.Add(this.SwapEdges().ReorientEdges().ReorientCorners().SwapCornersClockwise());
+                variations.Add(this.SwapEdges().ReorientEdges().ReorientCorners().ReorientCorners().SwapCornersClockwise());
+            }
             return variations;
 
         }

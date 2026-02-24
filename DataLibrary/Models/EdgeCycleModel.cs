@@ -19,6 +19,7 @@ namespace DataLibrary.Models
             First = first;
             Second = second;
         }
+        public EdgeCycleModel() { }
         public EdgeCycleModel Reorient()
         {
             return new EdgeCycleModel(CubeLogic.FlipEdge(Buffer), CubeLogic.FlipEdge(First), CubeLogic.FlipEdge(Second));
