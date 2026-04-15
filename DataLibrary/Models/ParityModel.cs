@@ -13,7 +13,7 @@ namespace DataLibrary.Models
         public string SecondEdge { get; set; } = string.Empty;
         public string FirstCorner { get; set; } = string.Empty;
         public string SecondCorner { get; set; } = string.Empty;
-        public string Twist {  get; set; } = string.Empty;
+        public string? Twist {  get; set; } = string.Empty;
         public ParityModel()
         {
         }
@@ -59,8 +59,7 @@ namespace DataLibrary.Models
         }
         public int TwistDirection(string twist)
         {
-            string copy = twist;
-            CubeLogic.TwistCorner(copy);
+            string copy = CubeLogic.TwistCorner(twist);
             if (copy[0] == 'U' || copy[0] == 'D')
             {
                 return 1;
@@ -101,6 +100,7 @@ namespace DataLibrary.Models
                 variations.Add(this.SwapEdges().ReorientEdges().ReorientCorners().SwapCorners());
                 variations.Add(this.SwapEdges().ReorientEdges().ReorientCorners().ReorientCorners().SwapCorners());
             }
+            
             else if(TwistDirection(this.Twist) == 1)
             {
                 variations.Add(this.SwapCornersCounterClockwise());
@@ -155,6 +155,7 @@ namespace DataLibrary.Models
                 variations.Add(this.SwapEdges().ReorientEdges().ReorientCorners().SwapCornersClockwise());
                 variations.Add(this.SwapEdges().ReorientEdges().ReorientCorners().ReorientCorners().SwapCornersClockwise());
             }
+            
             return variations;
 
         }

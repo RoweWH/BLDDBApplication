@@ -68,7 +68,6 @@ namespace DataLibrary.Data
                                 return edgeCase;
                             }
                         }
-                        return new EdgeCycleModel();
                         break;
                     }
 
@@ -84,7 +83,6 @@ namespace DataLibrary.Data
                                 return cornerCase;
                             }
                         }
-                        return new CornerCycleModel();
                         break;
                     }
                 case ParityModel parityCase:
@@ -99,7 +97,6 @@ namespace DataLibrary.Data
                                 return parityCase;
                             }
                         }
-                        return new ParityModel();
                         break;
                     }
                 default:
@@ -255,6 +252,10 @@ namespace DataLibrary.Data
                         var foundCase = await CorrectCase(CubeLogic.FindCase(edgeCase.Algorithms[0].Algorithm));
                         if (foundCase is EdgeCycleModel && givenCase.Equals((EdgeCycleModel)foundCase))
                         {
+                            if (await IsDuplicateAlgorithm(edgeCase.Algorithms[0].Algorithm, foundCase))
+                            {
+                                return -1;
+                            }
                             DynamicParameters p = new DynamicParameters();
                             p.Add("Buffer", givenCase.Buffer);
                             p.Add("First", givenCase.First);
@@ -272,6 +273,10 @@ namespace DataLibrary.Data
                         var foundCase = await CorrectCase(CubeLogic.FindCase(cornerCase.Algorithms[0].Algorithm));
                         if (foundCase is CornerCycleModel && givenCase.Equals((CornerCycleModel)foundCase))
                         {
+                            if (await IsDuplicateAlgorithm(cornerCase.Algorithms[0].Algorithm, foundCase))
+                            {
+                                return -1;
+                            }
                             DynamicParameters p = new DynamicParameters();
                             p.Add("Buffer", givenCase.Buffer);
                             p.Add("First", givenCase.First);
@@ -289,6 +294,10 @@ namespace DataLibrary.Data
                         var foundCase = await CorrectCase(CubeLogic.FindCase(parityCase.Algorithms[0].Algorithm));
                         if (foundCase is ParityModel && givenCase.Equals((ParityModel)foundCase))
                         {
+                            if (await IsDuplicateAlgorithm(parityCase.Algorithms[0].Algorithm, foundCase))
+                            {
+                                return -1;
+                            }
                             DynamicParameters p = new DynamicParameters();
                             p.Add("FirstEdge", givenCase.FirstEdge);
                             p.Add("SecondEdge", givenCase.SecondEdge);
