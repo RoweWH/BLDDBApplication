@@ -42,9 +42,13 @@ namespace BLDAPI.Controllers
             if (InputValidation.IsValidCornerRequest(cornerCaseAndAlgorithm))
             {
                 int id = await _algorithmData.InsertAlgByCase(cornerCaseAndAlgorithm);
-                if (id != 0)
+                if (id > 0)
                 {
                     return Ok(new { Id = id });
+                }
+                else if (id == -1)
+                {
+                    return BadRequest(new { Message = "Algorithm already exists" });
                 }
                 else
                     return BadRequest(new { Message = "Invalid Algorithm" });

@@ -41,9 +41,13 @@ namespace BLDAPI.Controllers
             if (InputValidation.IsValidEdgeRequest(edgeCaseAndAlgorithm))
             {
                 int id = await _algorithmData.InsertAlgByCase(edgeCaseAndAlgorithm);
-                if (id != 0)
+                if (id > 0)
                 {
                     return Ok(new { Id = id });
+                }
+                else if (id == -1)
+                {
+                    return BadRequest(new { Message = "Algorithm already exists" });
                 }
                 else
                     return BadRequest(new { Message = "Invalid Algorithm" });
