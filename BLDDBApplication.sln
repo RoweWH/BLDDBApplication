@@ -9,8 +9,6 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "BLDDBV2", "BLDDBV2\BLDDBV2.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLibrary", "DataLibrary\DataLibrary.csproj", "{56899533-9372-45EF-A0E6-2EB2971635F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tester1", "tester1\tester1.csproj", "{2C2C18FB-9E3F-4EDD-869E-3E93556BE083}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,10 +29,6 @@ Global
 		{56899533-9372-45EF-A0E6-2EB2971635F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56899533-9372-45EF-A0E6-2EB2971635F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56899533-9372-45EF-A0E6-2EB2971635F0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2C2C18FB-9E3F-4EDD-869E-3E93556BE083}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2C2C18FB-9E3F-4EDD-869E-3E93556BE083}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2C2C18FB-9E3F-4EDD-869E-3E93556BE083}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2C2C18FB-9E3F-4EDD-869E-3E93556BE083}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
