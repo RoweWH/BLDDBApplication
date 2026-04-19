@@ -9,11 +9,11 @@ namespace BLDAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AdminController : ControllerBase
+    public class ImportController : ControllerBase
     {
         private readonly IAlgorithmData _algorithmData;
 
-        public AdminController(IAlgorithmData algorithmData)
+        public ImportController(IAlgorithmData algorithmData)
         {
             _algorithmData = algorithmData;
         }
@@ -49,20 +49,6 @@ namespace BLDAPI.Controllers
                 DuplicateAlgorithms = duplicateAlgorithms,
                 InvalidAlgorithms = invalidAlgorithms
             });
-        }
-
-        [HttpDelete]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Delete(AlgorithmModel algorithm)
-        {
-            int id = await _algorithmData.DeleteAlg(algorithm);
-            if (id != 0)
-            {
-                return Ok();
-            }
-            else
-                return NotFound();
         }
     }
 }
