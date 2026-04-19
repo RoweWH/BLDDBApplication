@@ -76,10 +76,11 @@ namespace DataLibrary.Data
                         List<CaseModel> variations = cornerCase.Variations().Cast<CaseModel>().ToList();
                         foreach (var v in variations)
                         {
-                            var foundId = await GetCaseId((CornerCycleModel)v);
-                            if (foundId > 0)
+                            int id = await GetCaseId((CornerCycleModel)v);
+                            if (id > 0)
                             {
                                 cornerCase = (CornerCycleModel)v;
+                                cornerCase.Id = id;
                                 return cornerCase;
                             }
                         }
@@ -90,10 +91,11 @@ namespace DataLibrary.Data
                         List<CaseModel> variations = parityCase.Variations().Cast<CaseModel>().ToList();
                         foreach (var v in variations)
                         {
-                            var foundId = await GetCaseId((ParityModel)v);
-                            if (foundId > 0)
+                            int id = await GetCaseId((ParityModel)v);
+                            if (id > 0)
                             {
                                 parityCase = (ParityModel)v;
+                                parityCase.Id = id;
                                 return parityCase;
                             }
                         }
@@ -113,6 +115,7 @@ namespace DataLibrary.Data
                 case EdgeCycleModel:
                     {
                         EdgeCycleModel edgeCase = (EdgeCycleModel)await CorrectCase(caseToLoad);
+                        caseToLoad.Id = edgeCase.Id;
                         algorithms = await _dataAccess.LoadData<AlgorithmModel, dynamic>("dbo.spEdgeAlgorithms_GetByCycle",
                                                        new { Buffer = edgeCase.Buffer, First = edgeCase.First, Second = edgeCase.Second },
                                                        _connectionString.SqlConnectionName);
@@ -121,6 +124,7 @@ namespace DataLibrary.Data
                 case CornerCycleModel:
                     {
                         CornerCycleModel cornerCase = (CornerCycleModel)await CorrectCase(caseToLoad);
+                        caseToLoad.Id = cornerCase.Id;
                         algorithms = await _dataAccess.LoadData<AlgorithmModel, dynamic>("dbo.spCornerAlgorithms_GetByCycle",
                                                                    new { Buffer = cornerCase.Buffer, First = cornerCase.First, Second = cornerCase.Second },
                                                                    _connectionString.SqlConnectionName);
@@ -129,6 +133,7 @@ namespace DataLibrary.Data
                 case ParityModel:
                     {
                         ParityModel parityCase = (ParityModel)await CorrectCase(caseToLoad);
+                        caseToLoad.Id = parityCase.Id;
                         algorithms = await _dataAccess.LoadData<AlgorithmModel, dynamic>("dbo.spParityAlgorithms_GetByCase",
                                                                    new { FirstEdge = parityCase.FirstEdge, SecondEdge = parityCase.SecondEdge, FirstCorner = parityCase.FirstCorner, SecondCorner = parityCase.SecondCorner, Twist = parityCase.Twist },
                                                                    _connectionString.SqlConnectionName);

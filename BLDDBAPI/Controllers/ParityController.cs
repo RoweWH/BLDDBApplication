@@ -17,19 +17,42 @@ namespace BLDAPI.Controllers
             _algorithmData = algorithmData;
         }
 
-        [HttpGet("edge1={firstEdge}&edge2={secondEdge}&corner1={firstCorner}&corner2={secondCorner}")]
+        /*[HttpGet("edge1={edge1}&edge2={edge2}&corner1={corner1}&corner2={corner2}&twist={twist}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get(string firstEdge, string secondEdge, string firstCorner, string secondCorner, string? twist)
+        public async Task<IActionResult> Get(string edge1, string edge2, string corner1, string corner2, string? twist)
         {
-            ParityModel parityCase = new ParityModel(firstEdge, secondEdge, firstCorner, secondCorner, twist);
+            ParityModel parityCase = new ParityModel(edge1, edge2, corner1, corner2, twist);
             if (InputValidation.IsValidParityRequest(parityCase))
             {
                 parityCase.Algorithms = await _algorithmData.LoadAlgorithms(parityCase);
                 return Ok(parityCase);
             }
             else return BadRequest(new { Message = "Invalid parity case request" });
+        }
+        */
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Get(
+        [FromQuery] string edge1,
+        [FromQuery] string edge2,
+        [FromQuery] string corner1,
+        [FromQuery] string corner2,
+        [FromQuery] string? twist)
+        {
+            ParityModel parityCase = new ParityModel(edge1, edge2, corner1, corner2, twist);
+
+            if (InputValidation.IsValidParityRequest(parityCase))
+            {
+                parityCase.Algorithms = await _algorithmData.LoadAlgorithms(parityCase);
+                return Ok(parityCase);
+            }
+
+            return BadRequest(new { Message = "Invalid parity case request" });
         }
 
         [Route("[action]")]
