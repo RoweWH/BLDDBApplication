@@ -17,37 +17,45 @@ namespace BLDAPI.Controllers
             _algorithmData = algorithmData;
         }
 
-        [Route("[action]")]
+        
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> ImportAlgorithms(List<string> newAlgorithms)
+        public async Task<IActionResult> Post([FromBody] string[] newAlgorithms)
         {
             List<AlgorithmModel> validAlgorithms = new List<AlgorithmModel>();
             List<string> invalidAlgorithms = new List<string>();
             List<string> duplicateAlgorithms = new List<string>();
-            foreach (var alg in newAlgorithms)
+            try
             {
-                int id = await _algorithmData.InsertAlg(alg);
-                if(id == -1)
+                foreach (var alg in newAlgorithms)
                 {
-                    duplicateAlgorithms.Add(alg);
+                    int id = await _algorithmData.InsertAlg(alg);
+                    if (id == -1)
+                    {
+                        duplicateAlgorithms.Add(alg);
+                    }
+                    else if (id == 0)
+                    {
+                        invalidAlgorithms.Add(alg);
+                    }
+                    else
+                    {
+                        validAlgorithms.Add(new AlgorithmModel { Id = id, Algorithm = alg });
+                    }
+
                 }
-                else if(id == 0)
+                return Ok(new
                 {
-                    invalidAlgorithms.Add(alg);
-                }
-                else
-                {
-                    validAlgorithms.Add(new AlgorithmModel { Id = id, Algorithm = alg });
-                }
-                
+                    ValidAlgorithms = validAlgorithms,
+                    DuplicateAlgorithms = duplicateAlgorithms,
+                    InvalidAlgorithms = invalidAlgorithms
+                });
             }
-            return Ok(new
+
+            catch (Exception ex)
             {
-                ValidAlgorithms = validAlgorithms,
-                DuplicateAlgorithms = duplicateAlgorithms,
-                InvalidAlgorithms = invalidAlgorithms
-            });
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }

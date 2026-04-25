@@ -3,26 +3,30 @@ using DataLibrary.Db;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Services
 builder.Services.AddControllers();
+
 builder.Services.AddSingleton(new ConnectionStringData
 {
     SqlConnectionName = "Default"
 });
 builder.Services.AddSingleton<IDataAccess, SqlDb>();
 builder.Services.AddSingleton<IAlgorithmData, AlgorithmData>();
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowOrigin", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+    options.AddPolicy("AllowOrigin", policy =>
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader());
 });
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -31,11 +35,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowOrigin");
+
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.UseCors("AllowOrigin");
 
 app.Run();
 
