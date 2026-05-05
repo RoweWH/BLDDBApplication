@@ -21,37 +21,78 @@ namespace BLDAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get([FromQuery] string buffer, [FromQuery] string? first, [FromQuery] string? second)
-        {
-            if (string.IsNullOrEmpty(first) || string.IsNullOrEmpty(second))
-            {
-                if (InputValidation.IsValidCorner(buffer))
-                {
-                    var cornerCases = await _algorithmData.LoadCasesByBuffer(buffer);
 
-                    foreach (var c in cornerCases)
-                    {
-                        c.Algorithms = await _algorithmData.LoadAlgorithms(c);
-                    }
-                    return Ok(cornerCases);
-                }
-                else return BadRequest(new { Message = "Invalid corner case request" });
-            }
-            EdgeCycleModel edgeCase = new EdgeCycleModel(buffer, first, second);
-            if (InputValidation.IsValidEdgeRequest(edgeCase))
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Get(
+        [FromQuery] string? buffer,
+        [FromQuery] string? first,
+        [FromQuery] string? second)
+        {
+            bool hasBuffer = !string.IsNullOrWhiteSpace(buffer);
+            bool hasFirst = !string.IsNullOrWhiteSpace(first);
+            bool hasSecond = !string.IsNullOrWhiteSpace(second);
+
+            bool noParams = !hasBuffer && !hasFirst && !hasSecond;
+            bool bufferOnly = hasBuffer && !hasFirst && !hasSecond;
+            bool allParams = hasBuffer && hasFirst && hasSecond;
+
+            if (noParams)
             {
-                edgeCase.Algorithms = await _algorithmData.LoadAlgorithms(edgeCase);
-                return Ok(edgeCase);
+                var cornerCases = await _algorithmData.LoadAll<CornerCycleModel>();
+
+                foreach (var c in cornerCases)
+                {
+                    c.Algorithms = await _algorithmData.LoadAlgorithms<CornerCycleModel>(c);
+                }
+
+                return Ok(cornerCases);
             }
-            else return BadRequest(new { Message = "Invalid edge case request" });
+
+            if (bufferOnly)
+            {
+                if (!InputValidation.IsValidCorner(buffer!))
+                {
+                    return BadRequest(new { Message = "Invalid buffer" });
+                }
+
+                var cornerCases = await _algorithmData.LoadCasesByBuffer<CornerCycleModel>(buffer!);
+
+                foreach (var c in cornerCases)
+                {
+                    c.Algorithms = await _algorithmData.LoadAlgorithms(c);
+                }
+
+                return Ok(cornerCases);
+            }
+
+            if (allParams)
+            {
+                var cornerCase = new CornerCycleModel(buffer!, first!, second!);
+
+                if (!InputValidation.IsValidCornerRequest(cornerCase))
+                {
+                    return BadRequest(new { Message = "Invalid corner case request" });
+                }
+
+                cornerCase.Algorithms = await _algorithmData.LoadAlgorithms<CornerCycleModel>(cornerCase);
+
+                return Ok(cornerCase);
+            }
+
+            return BadRequest(new
+            {
+                Message = "Invalid query. Use no parameters, buffer only, or buffer + first + second."
+            });
         }
 
 
-        [Route("[action]")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> PostAlgorithmByCase(CornerCycleModel cornerCaseAndAlgorithm)
+        public async Task<IActionResult> Post(CornerCycleModel cornerCaseAndAlgorithm)
         {
             if (InputValidation.IsValidCornerRequest(cornerCaseAndAlgorithm))
             {

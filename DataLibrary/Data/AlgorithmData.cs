@@ -26,92 +26,87 @@ namespace DataLibrary.Data
             _connectionString = connectionString;
         }
 
-        public async Task<int> GetCaseId(CaseModel caseModel)
+        public async Task<int> GetCaseId<T>(T caseModel) where T : CaseModel
         {
-            switch (caseModel)
-            {
-                case EdgeCycleModel edgeCase:
-                    {
-                        return (await _dataAccess.LoadData<int, dynamic>("dbo.spEdgeCases_GetId",
-                                                                       new { Buffer = edgeCase.Buffer, First = edgeCase.First, Second = edgeCase.Second },
-                                                                       _connectionString.SqlConnectionName)).FirstOrDefault();
-                    }
-                case CornerCycleModel cornerCase:
-                    {
-                        return (await _dataAccess.LoadData<int, dynamic>("dbo.spCornerCases_GetId",
-                                                                       new { Buffer = cornerCase.Buffer, First = cornerCase.First, Second = cornerCase.Second },
-                                                                       _connectionString.SqlConnectionName)).FirstOrDefault();
-                    }
-                case ParityModel parityCase:
-                    {
-                        return (await _dataAccess.LoadData<int, dynamic>("dbo.spParityCases_GetId",
-                                                                         new { FirstEdge = parityCase.FirstEdge, SecondEdge = parityCase.SecondEdge, FirstCorner = parityCase.FirstCorner, SecondCorner = parityCase.SecondCorner, Twist = parityCase.Twist },
-                                                                         _connectionString.SqlConnectionName)).FirstOrDefault();
-                    }
-                default:
-                    return 0;
-            }
-        }
-        public async Task<CaseModel> CorrectCase(CaseModel caseToFix)
-        {
-            switch (caseToFix)
-            {
-                case EdgeCycleModel edgeCase:
-                    {
-                        List<CaseModel> variations = edgeCase.Variations().Cast<CaseModel>().ToList();
-                        foreach (var v in variations)
-                        {
-                            int id = await GetCaseId((EdgeCycleModel)v);
-                            if (id > 0)
-                            {
-                                edgeCase = (EdgeCycleModel)v;
-                                edgeCase.Id = id;
-                                return edgeCase;
-                            }
-                        }
-                        break;
-                    }
+            if (caseModel == null)
+                return 0;
 
-                case CornerCycleModel cornerCase:
-                    {
-                        List<CaseModel> variations = cornerCase.Variations().Cast<CaseModel>().ToList();
-                        foreach (var v in variations)
+            return caseModel switch
+            {
+                EdgeCycleModel edgeCase =>
+                    (await _dataAccess.LoadData<int, dynamic>(
+                        "dbo.spEdgeCases_GetId",
+                        new
                         {
-                            int id = await GetCaseId((CornerCycleModel)v);
-                            if (id > 0)
-                            {
-                                cornerCase = (CornerCycleModel)v;
-                                cornerCase.Id = id;
-                                return cornerCase;
-                            }
-                        }
-                        break;
-                    }
-                case ParityModel parityCase:
-                    {
-                        List<CaseModel> variations = parityCase.Variations().Cast<CaseModel>().ToList();
-                        foreach (var v in variations)
+                            Buffer = edgeCase.Buffer,
+                            First = edgeCase.First,
+                            Second = edgeCase.Second
+                        },
+                        _connectionString.SqlConnectionName)).FirstOrDefault(),
+
+                CornerCycleModel cornerCase =>
+                    (await _dataAccess.LoadData<int, dynamic>(
+                        "dbo.spCornerCases_GetId",
+                        new
                         {
-                            int id = await GetCaseId((ParityModel)v);
-                            if (id > 0)
-                            {
-                                parityCase = (ParityModel)v;
-                                parityCase.Id = id;
-                                return parityCase;
-                            }
-                        }
-                        break;
-                    }
-                default:
-                    return new CaseModel();
+                            Buffer = cornerCase.Buffer,
+                            First = cornerCase.First,
+                            Second = cornerCase.Second
+                        },
+                        _connectionString.SqlConnectionName)).FirstOrDefault(),
+
+                ParityModel parityCase =>
+                    (await _dataAccess.LoadData<int, dynamic>(
+                        "dbo.spParityCases_GetId",
+                        new
+                        {
+                            FirstEdge = parityCase.FirstEdge,
+                            SecondEdge = parityCase.SecondEdge,
+                            FirstCorner = parityCase.FirstCorner,
+                            SecondCorner = parityCase.SecondCorner,
+                            Twist = parityCase.Twist
+                        },
+                        _connectionString.SqlConnectionName)).FirstOrDefault(),
+
+                _ => 0
+            };
+        }
+        public async Task<T> CorrectCase<T>(T caseToFix) where T : CaseModel
+        {
+            if (caseToFix == null)
+                return null;
+
+            IEnumerable<T> variations = caseToFix switch
+            {
+                EdgeCycleModel e => e.Variations().Cast<T>(),
+                CornerCycleModel c => c.Variations().Cast<T>(),
+                ParityModel p => p.Variations().Cast<T>(),
+                _ => Enumerable.Empty<T>()
+            };
+
+            foreach (var v in variations)
+            {
+                int id = v switch
+                {
+                    EdgeCycleModel e => await GetCaseId(e),
+                    CornerCycleModel c => await GetCaseId(c),
+                    ParityModel p => await GetCaseId(p),
+                    _ => 0
+                };
+
+                if (id > 0)
+                {
+                    v.Id = id;
+                    return v;
+                }
             }
-            // Ensure a return value for all code paths
-            return new CaseModel();
+
+            return caseToFix;
         }
 
-        public async Task<dynamic> LoadCasesByBuffer(string buffer)
+        public async Task<List<T>> LoadCasesByBuffer<T>(string buffer)
         {
-            if (buffer.Length == 2)
+            if (buffer.Length == 2 && typeof(T) == typeof(EdgeCycleModel))
             {
                 List<EdgeCycleModel> cases = await _dataAccess.LoadData<EdgeCycleModel, dynamic>("dbo.spEdgeCases_GetByBuffer",
                                                                                                  new { Buffer = buffer, FlippedBuffer = CubeLogic.FlipEdge(buffer) },
@@ -128,9 +123,9 @@ namespace DataLibrary.Data
                         }
                     }
                 }
-                return cases;
+                return cases.Cast<T>().ToList();
             }
-            else if (buffer.Length == 3)
+            else if (buffer.Length == 3 && typeof(T) == typeof(CornerCycleModel))
             {
                 List<CornerCycleModel> cases = await _dataAccess.LoadData<CornerCycleModel, dynamic>("dbo.spCornerCases_GetByBuffer",
                                                                                                      new { Buffer = buffer, TwistedBufferOne = CubeLogic.TwistCorner(buffer), TwistedBufferTwo = CubeLogic.TwistCorner(CubeLogic.TwistCorner(buffer)) },
@@ -147,43 +142,94 @@ namespace DataLibrary.Data
                         }
                     }
                 }
-                return cases;
+                return cases.Cast<T>().ToList();
             }
 
-            else return 0;
+            else return new List<T>();
         }
-        public async Task<List<AlgorithmModel>> LoadAlgorithms(CaseModel caseToLoad)
+
+        public async Task<List<T>> LoadAll<T>() where T : CaseModel
         {
-            List<AlgorithmModel> algorithms = new List<AlgorithmModel>();
+            if (typeof(T) == typeof(EdgeCycleModel))
+            {
+                return (await _dataAccess.LoadData<EdgeCycleModel, dynamic>(
+                    "dbo.spEdgeCases_GetAll",
+                    new { },
+                    _connectionString.SqlConnectionName
+                )).Cast<T>().ToList();
+            }
+
+            if (typeof(T) == typeof(CornerCycleModel))
+            {
+                return (await _dataAccess.LoadData<CornerCycleModel, dynamic>(
+                    "dbo.spCornerCases_GetAll",
+                    new { },
+                    _connectionString.SqlConnectionName
+                )).Cast<T>().ToList();
+            }
+
+            if (typeof(T) == typeof(ParityModel))
+            {
+                return (await _dataAccess.LoadData<ParityModel, dynamic>(
+                    "dbo.spParityCases_GetAll",
+                    new { },
+                    _connectionString.SqlConnectionName
+                )).Cast<T>().ToList();
+            }
+
+            throw new Exception("Unsupported type");
+        }
+        public async Task<List<AlgorithmModel>> LoadAlgorithms<T>(T caseToLoad) where T : CaseModel
+        {
+            if (caseToLoad == null)
+                return new List<AlgorithmModel>();
+
             switch (caseToLoad)
             {
-                case EdgeCycleModel:
-                    {
-                        EdgeCycleModel edgeCase = (EdgeCycleModel)await CorrectCase(caseToLoad);
-                        caseToLoad.Id = edgeCase.Id;
-                        algorithms = await _dataAccess.LoadData<AlgorithmModel, dynamic>("dbo.spEdgeAlgorithms_GetByCycle",
-                                                       new { Buffer = edgeCase.Buffer, First = edgeCase.First, Second = edgeCase.Second },
-                                                       _connectionString.SqlConnectionName);
-                        return algorithms;
-                    }
-                case CornerCycleModel:
-                    {
-                        CornerCycleModel cornerCase = (CornerCycleModel)await CorrectCase(caseToLoad);
-                        caseToLoad.Id = cornerCase.Id;
-                        algorithms = await _dataAccess.LoadData<AlgorithmModel, dynamic>("dbo.spCornerAlgorithms_GetByCycle",
-                                                                   new { Buffer = cornerCase.Buffer, First = cornerCase.First, Second = cornerCase.Second },
-                                                                   _connectionString.SqlConnectionName);
-                        return algorithms;
-                    }
-                case ParityModel:
-                    {
-                        ParityModel parityCase = (ParityModel)await CorrectCase(caseToLoad);
-                        caseToLoad.Id = parityCase.Id;
-                        algorithms = await _dataAccess.LoadData<AlgorithmModel, dynamic>("dbo.spParityAlgorithms_GetByCase",
-                                                                   new { FirstEdge = parityCase.FirstEdge, SecondEdge = parityCase.SecondEdge, FirstCorner = parityCase.FirstCorner, SecondCorner = parityCase.SecondCorner, Twist = parityCase.Twist },
-                                                                   _connectionString.SqlConnectionName);
-                        return algorithms;
-                    }
+                case EdgeCycleModel edgeCase:
+                    edgeCase = await CorrectCase(edgeCase);
+                    caseToLoad.Id = edgeCase.Id;
+
+                    return await _dataAccess.LoadData<AlgorithmModel, dynamic>(
+                        "dbo.spEdgeAlgorithms_GetByCycle",
+                        new
+                        {
+                            Buffer = edgeCase.Buffer,
+                            First = edgeCase.First,
+                            Second = edgeCase.Second
+                        },
+                        _connectionString.SqlConnectionName);
+
+                case CornerCycleModel cornerCase:
+                    cornerCase = await CorrectCase(cornerCase);
+                    caseToLoad.Id = cornerCase.Id;
+
+                    return await _dataAccess.LoadData<AlgorithmModel, dynamic>(
+                        "dbo.spCornerAlgorithms_GetByCycle",
+                        new
+                        {
+                            Buffer = cornerCase.Buffer,
+                            First = cornerCase.First,
+                            Second = cornerCase.Second
+                        },
+                        _connectionString.SqlConnectionName);
+
+                case ParityModel parityCase:
+                    parityCase = await CorrectCase(parityCase);
+                    caseToLoad.Id = parityCase.Id;
+
+                    return await _dataAccess.LoadData<AlgorithmModel, dynamic>(
+                        "dbo.spParityAlgorithms_GetByCase",
+                        new
+                        {
+                            FirstEdge = parityCase.FirstEdge,
+                            SecondEdge = parityCase.SecondEdge,
+                            FirstCorner = parityCase.FirstCorner,
+                            SecondCorner = parityCase.SecondCorner,
+                            Twist = parityCase.Twist
+                        },
+                        _connectionString.SqlConnectionName);
+
                 default:
                     return new List<AlgorithmModel>();
             }

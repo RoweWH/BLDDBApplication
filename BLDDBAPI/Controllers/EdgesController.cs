@@ -21,36 +21,72 @@ namespace BLDAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get([FromQuery]string buffer, [FromQuery] string? first, [FromQuery] string? second)
+        public async Task<IActionResult> Get(
+       [FromQuery] string? buffer,
+       [FromQuery] string? first,
+       [FromQuery] string? second)
         {
-            if (string.IsNullOrEmpty(first) || string.IsNullOrEmpty(second))
-            {
-                if (InputValidation.IsValidEdge(buffer))
-                {
-                   var edgeCases = await _algorithmData.LoadCasesByBuffer(buffer);
+            bool hasBuffer = !string.IsNullOrWhiteSpace(buffer);
+            bool hasFirst = !string.IsNullOrWhiteSpace(first);
+            bool hasSecond = !string.IsNullOrWhiteSpace(second);
 
-                    foreach (var c in edgeCases)
-                    {
-                        c.Algorithms = await _algorithmData.LoadAlgorithms(c);
-                    }
-                    return Ok(edgeCases);
-                }
-                else return BadRequest(new { Message = "Invalid edge case request" });
-            }
-            EdgeCycleModel edgeCase = new EdgeCycleModel(buffer, first, second);
-            if (InputValidation.IsValidEdgeRequest(edgeCase))
+            bool noParams = !hasBuffer && !hasFirst && !hasSecond;
+            bool bufferOnly = hasBuffer && !hasFirst && !hasSecond;
+            bool allParams = hasBuffer && hasFirst && hasSecond;
+
+            if (noParams)
             {
-                edgeCase.Algorithms = await _algorithmData.LoadAlgorithms(edgeCase);
+                var edgeCases = await _algorithmData.LoadAll<EdgeCycleModel>();
+
+                foreach (var c in edgeCases)
+                {
+                    c.Algorithms = await _algorithmData.LoadAlgorithms(c);
+                }
+
+                return Ok(edgeCases);
+            }
+
+            if (bufferOnly)
+            {
+                if (!InputValidation.IsValidEdge(buffer!))
+                {
+                    return BadRequest(new { Message = "Invalid buffer" });
+                }
+
+                var edgeCases = await _algorithmData.LoadCasesByBuffer<EdgeCycleModel>(buffer!);
+
+                foreach (var c in edgeCases)
+                {
+                    c.Algorithms = await _algorithmData.LoadAlgorithms<EdgeCycleModel>(c);
+                }
+
+                return Ok(edgeCases);
+            }
+
+            if (allParams)
+            {
+                var edgeCase = new EdgeCycleModel(buffer!, first!, second!);
+
+                if (!InputValidation.IsValidEdgeRequest(edgeCase))
+                {
+                    return BadRequest(new { Message = "Invalid edge case request" });
+                }
+
+                edgeCase.Algorithms = await _algorithmData.LoadAlgorithms<EdgeCycleModel>(edgeCase);
+
                 return Ok(edgeCase);
             }
-            else return BadRequest(new { Message = "Invalid edge case request" });
+
+            return BadRequest(new
+            {
+                Message = "Invalid query. Use no parameters, buffer only, or buffer + first + second."
+            });
         }
 
-        [Route("[action]")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> PostAlgorithmByCase(EdgeCycleModel edgeCaseAndAlgorithm)
+        public async Task<IActionResult> Post(EdgeCycleModel edgeCaseAndAlgorithm)
         {
             if (InputValidation.IsValidEdgeRequest(edgeCaseAndAlgorithm))
             {
