@@ -10,6 +10,8 @@ namespace DataLibrary.Data
         Task<int> GetCaseId(CaseModel caseModel);
         Task<int> InsertAlg(string newAlgorithm);
         Task<int> InsertAlgByCase(CaseModel caseAndAlgorithm);
+        Task<bool> IsDuplicateAlgorithm(string newAlgorithm, CaseModel caseToLoad);
         Task<List<AlgorithmModel>> LoadAlgorithms(CaseModel caseToLoad);
+        Task<dynamic> LoadCasesByBuffer(string buffer);
     }
 }

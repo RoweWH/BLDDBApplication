@@ -6,6 +6,21 @@ namespace BLDAPI.Validation
 {
     public static class InputValidation
     {
+        public static bool IsValidEdge(string edge)
+        {
+            if(SolvedCube.Edges.Contains(edge) || SolvedCube.Edges.Contains(CubeLogic.FlipEdge(edge)))
+            {
+                return true;
+            }
+            return false;
+        }
+        public static bool IsValidCorner(string corner)
+        {
+            if(SolvedCube.Corners.Contains(corner) || SolvedCube.Corners.Contains(CubeLogic.TwistCorner(corner)) || SolvedCube.Corners.Contains(CubeLogic.TwistCorner(CubeLogic.TwistCorner(corner)))){
+                return true;
+            }
+            return false;
+        }
         public static bool IsValidEdgeRequest(EdgeCycleModel edgeCase)
         {
             List<string> validEdges = SolvedCube.Edges.ToList();

@@ -16,22 +16,36 @@ namespace BLDAPI.Controllers
         {
             _algorithmData = algorithmData;
         }
-        
-        [HttpGet("corner1={buffer}&corner2={first}&corner3={second}")]
+
+        [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get(string buffer, string first, string second)
+        public async Task<IActionResult> Get([FromQuery] string buffer, [FromQuery] string? first, [FromQuery] string? second)
         {
-            CornerCycleModel cornerCase = new CornerCycleModel(buffer, first, second);
-            if (InputValidation.IsValidCornerRequest(cornerCase))
+            if (string.IsNullOrEmpty(first) || string.IsNullOrEmpty(second))
             {
-                cornerCase.Algorithms = await _algorithmData.LoadAlgorithms(cornerCase);
-                return Ok(cornerCase);
+                if (InputValidation.IsValidCorner(buffer))
+                {
+                    var cornerCases = await _algorithmData.LoadCasesByBuffer(buffer);
+
+                    foreach (var c in cornerCases)
+                    {
+                        c.Algorithms = await _algorithmData.LoadAlgorithms(c);
+                    }
+                    return Ok(cornerCases);
+                }
+                else return BadRequest(new { Message = "Invalid corner case request" });
             }
-            else return BadRequest(new { Message = "Invalid corner case request" });
+            EdgeCycleModel edgeCase = new EdgeCycleModel(buffer, first, second);
+            if (InputValidation.IsValidEdgeRequest(edgeCase))
+            {
+                edgeCase.Algorithms = await _algorithmData.LoadAlgorithms(edgeCase);
+                return Ok(edgeCase);
+            }
+            else return BadRequest(new { Message = "Invalid edge case request" });
         }
-        
+
 
         [Route("[action]")]
         [HttpPost]

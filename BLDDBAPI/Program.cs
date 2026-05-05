@@ -8,7 +8,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddSingleton(new ConnectionStringData
 {
-    SqlConnectionName = "Default"
+    SqlConnectionName = "Local"
 });
 builder.Services.AddSingleton<IDataAccess, SqlDb>();
 builder.Services.AddSingleton<IAlgorithmData, AlgorithmData>();

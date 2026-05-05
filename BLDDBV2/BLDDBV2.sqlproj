@@ -60,6 +60,7 @@
     <Folder Include="dbo\Stored Procedures" />
     <Folder Include="dbo\Tables" />
     <Folder Include="Scripts" />
+    <Folder Include="dbo\Views" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\CornerPieces.sql" />
@@ -89,6 +90,10 @@
     <Build Include="dbo\Stored Procedures\spParityAlgorithms_InsertByCaseId.sql" />
     <Build Include="dbo\Stored Procedures\spParityCases_GetId.sql" />
     <Build Include="dbo\Stored Procedures\spParityCases_Add.sql" />
+    <Build Include="dbo\Views\vwEdgeCases_All.sql" />
+    <Build Include="dbo\Stored Procedures\spEdgeCases_GetByBuffer.sql" />
+    <Build Include="dbo\Stored Procedures\spCornerCases_GetByBuffer.sql" />
+    <Build Include="dbo\Views\vwCornerCases_All.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="BLDDBV2.refactorlog" />

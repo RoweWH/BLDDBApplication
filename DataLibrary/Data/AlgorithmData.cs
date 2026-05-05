@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Data;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -107,6 +108,50 @@ namespace DataLibrary.Data
             // Ensure a return value for all code paths
             return new CaseModel();
         }
+
+        public async Task<dynamic> LoadCasesByBuffer(string buffer)
+        {
+            if (buffer.Length == 2)
+            {
+                List<EdgeCycleModel> cases = await _dataAccess.LoadData<EdgeCycleModel, dynamic>("dbo.spEdgeCases_GetByBuffer",
+                                                                                                 new { Buffer = buffer, FlippedBuffer = CubeLogic.FlipEdge(buffer) },
+                                                                                                 _connectionString.SqlConnectionName);
+                for (int i = 0; i < cases.Count; i++)
+                {
+                    var variations = cases[i].Variations();
+                    foreach (var v in variations)
+                    {
+                        if (v.Buffer == buffer)
+                        {
+                            cases[i] = v;
+                            break;
+                        }
+                    }
+                }
+                return cases;
+            }
+            else if (buffer.Length == 3)
+            {
+                List<CornerCycleModel> cases = await _dataAccess.LoadData<CornerCycleModel, dynamic>("dbo.spCornerCases_GetByBuffer",
+                                                                                                     new { Buffer = buffer, TwistedBufferOne = CubeLogic.TwistCorner(buffer), TwistedBufferTwo = CubeLogic.TwistCorner(CubeLogic.TwistCorner(buffer)) },
+                                                                                                     _connectionString.SqlConnectionName);
+                for (int i = 0; i < cases.Count; i++)
+                {
+                    var variations = cases[i].Variations();
+                    foreach (var v in variations)
+                    {
+                        if (v.Buffer == buffer)
+                        {
+                            cases[i] = v;
+                            break;
+                        }
+                    }
+                }
+                return cases;
+            }
+
+            else return 0;
+        }
         public async Task<List<AlgorithmModel>> LoadAlgorithms(CaseModel caseToLoad)
         {
             List<AlgorithmModel> algorithms = new List<AlgorithmModel>();
@@ -171,7 +216,7 @@ namespace DataLibrary.Data
                             {
                                 return 0;
                             }
-                            if(await IsDuplicateAlgorithm(newAlgorithm, trueCase))
+                            if (await IsDuplicateAlgorithm(newAlgorithm, trueCase))
                             {
                                 return -1;
                             }
@@ -193,7 +238,7 @@ namespace DataLibrary.Data
                             {
                                 return 0;
                             }
-                            if(await IsDuplicateAlgorithm(newAlgorithm, trueCase))
+                            if (await IsDuplicateAlgorithm(newAlgorithm, trueCase))
                             {
                                 return -1;
                             }
@@ -220,7 +265,7 @@ namespace DataLibrary.Data
                             {
                                 return 0;
                             }
-                            if(await IsDuplicateAlgorithm(newAlgorithm, foundCase))
+                            if (await IsDuplicateAlgorithm(newAlgorithm, foundCase))
                             {
                                 return -1;
                             }

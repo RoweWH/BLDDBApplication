@@ -38,13 +38,13 @@ namespace BLDAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(
-        [FromQuery] string edge1,
-        [FromQuery] string edge2,
-        [FromQuery] string corner1,
-        [FromQuery] string corner2,
+        [FromQuery] string firstEdge,
+        [FromQuery] string secondEdge,
+        [FromQuery] string firstCorner,
+        [FromQuery] string secondCorner,
         [FromQuery] string? twist)
         {
-            ParityModel parityCase = new ParityModel(edge1, edge2, corner1, corner2, twist);
+            ParityModel parityCase = new ParityModel(firstEdge, secondEdge, firstCorner, secondCorner, twist);
 
             if (InputValidation.IsValidParityRequest(parityCase))
             {
