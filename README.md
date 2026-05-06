@@ -1,24 +1,70 @@
-# BLD DB API
-This is an API that connects to a database of algorithms used for Rubik's Cube blindfolded solving. There are currently 3 types of algorithms it stores:
-* Edge Commutators
-* Corner Commutators
-* Parity Algorithms (Standard 2e2c, LTCT and 2TC)
+# 🧠 BLD DB API
 
-## Current Functionality
-* GET - returns a list of algorithms for a specific case
-* POST (2 Methods)
-  1.  PostAlgorithmByCase - Validates that an algorithm matches a specific case, and then adds to the database.
-  2.  PostAlgorithms - For importing large batches of algorithms at once. This method determines which algorithms are valid, then organizes them into the database by case.
-     
-* DELETE - deletes algorithm
+Backend API for managing and storing algorithms used in **blindfolded Rubik’s Cube solving**.
 
-## Technologies Used
-* C#
-* .NET8
-* SQL
+This API organizes algorithms by case type, validates correctness, prevents duplicates, and provides structured access for training tools and applications like **BLDLAB**.
 
-## TODO
-* expand get requests
-* Other advanced algsets
+---
 
+## 🧩 Supported Algorithm Types
+
+- **Edge Commutators** (3-style edge cycles)
+- **Corner Commutators** (3-style corner cycles)
+- **Parity Algorithms**
+  - Standard 2e2c
+  - LTCT (Last Two Corners Twist)
+  - 2TC (Two Twist Corners)
+
+---
+
+## ⚙️ Current Functionality
+
+### ➕ Insert Algorithms
+
+- Insert a single algorithm tied to a specific case
+- Automatically validates:
+  - Case correctness
+  - Duplicate algorithms
+- Invalid or duplicate submissions are rejected
+
+---
+
+### 📦 Bulk Import
+
+- Upload large sets of algorithms (e.g., CSV)
+- API will:
+  - Detect case for each algorithm
+  - Sort valid algorithms into the correct case
+  - Discard invalid or unrecognized entries
+
+---
+
+### 📤 Fetch Algorithms
+
+#### Edges & Corners
+- Get **all algorithms**
+- Get algorithms by **buffer**
+- Get algorithms for a **specific case**
+
+#### Parity
+- Get **all algorithms**
+- Get algorithms for a **specific case**
+
+---
+
+## 🧠 Core Behavior
+
+- Algorithms are **parsed and analyzed** to determine their case
+- Cases are **normalized** (handling rotations / variations)
+- Data is stored in a **consistent, non-duplicated format**
+- All lookups return **clean, validated results**
+
+---
+
+## 🛠️ Tech Stack
+
+- **C#**
+- **.NET 8**
+- **SQL Server**
+- **Dapper** (data access)
   
