@@ -38,6 +38,11 @@ namespace BLDAPI.Controllers
             if (noParams)
             {
                 var cases = await _algorithmData.LoadAll<ParityModel>();
+                foreach(var c in cases)
+                {
+                    if (string.IsNullOrWhiteSpace(c.Twist)) c.Twist = null;
+                    c.Algorithms = await _algorithmData.LoadAlgorithms<ParityModel>(c);
+                }
                 return Ok(cases);
             }
 

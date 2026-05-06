@@ -73,9 +73,6 @@ namespace DataLibrary.Data
         }
         public async Task<T> CorrectCase<T>(T caseToFix) where T : CaseModel
         {
-            if (caseToFix == null)
-                return null;
-
             IEnumerable<T> variations = caseToFix switch
             {
                 EdgeCycleModel e => e.Variations().Cast<T>(),
