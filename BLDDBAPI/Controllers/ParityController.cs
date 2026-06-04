@@ -72,6 +72,20 @@ namespace BLDAPI.Controllers
 
             return BadRequest(new { Message = "Invalid parity case request" });
         }
+        [HttpGet("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var algorithm = await _algorithmData.LoadAlgorithmById<ParityModel>(id);
+
+            if (algorithm == null)
+            {
+                return NotFound(new { Message = "Algorithm not found" });
+            }
+
+            return Ok(algorithm);
+        }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]

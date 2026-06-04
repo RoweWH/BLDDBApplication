@@ -83,6 +83,21 @@ namespace BLDAPI.Controllers
             });
         }
 
+        [HttpGet("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var algorithm = await _algorithmData.LoadAlgorithmById<EdgeCycleModel>(id);
+
+            if (algorithm == null)
+            {
+                return NotFound(new { Message = "Algorithm not found" });
+            }
+
+            return Ok(algorithm);
+        }
+
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

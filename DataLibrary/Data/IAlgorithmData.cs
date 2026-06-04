@@ -11,6 +11,7 @@ namespace DataLibrary.Data
         Task<int> InsertAlg(string newAlgorithm);
         Task<int> InsertAlgByCase(CaseModel caseAndAlgorithm);
         Task<bool> IsDuplicateAlgorithm(string newAlgorithm, CaseModel caseToLoad);
+        Task<string?> LoadAlgorithmById<T>(int id) where T : CaseModel;
         Task<List<AlgorithmModel>> LoadAlgorithms<T>(T caseToLoad) where T : CaseModel;
         Task<List<T>> LoadAll<T>() where T : CaseModel;
         Task<List<T>> LoadCasesByBuffer<T>(string buffer);

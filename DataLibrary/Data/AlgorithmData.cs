@@ -101,6 +101,44 @@ namespace DataLibrary.Data
             return caseToFix;
         }
 
+        public async Task<string?> LoadAlgorithmById<T>(int id) where T : CaseModel
+        {
+            if (typeof(T) == typeof(EdgeCycleModel))
+            {
+                var alg = await _dataAccess.LoadData<string, dynamic>(
+                    "dbo.spEdgeAlgorithms_GetById",
+                    new { Id = id },
+                    _connectionString.SqlConnectionName
+                );
+
+                return alg?.FirstOrDefault();
+            }
+
+            if (typeof(T) == typeof(CornerCycleModel))
+            {
+                var alg = await _dataAccess.LoadData<string, dynamic>(
+                    "dbo.spCornerAlgorithms_GetById",
+                    new { Id = id },
+                    _connectionString.SqlConnectionName
+                );
+
+                return alg?.FirstOrDefault();
+            }
+
+            if (typeof(T) == typeof(ParityModel))
+            {
+                var alg = await _dataAccess.LoadData<string, dynamic>(
+                    "dbo.spParityAlgorithms_GetById",
+                    new { Id = id },
+                    _connectionString.SqlConnectionName
+                );
+
+                return alg?.FirstOrDefault();
+            }
+
+            throw new Exception("Unsupported type");
+        }
+
         public async Task<List<T>> LoadCasesByBuffer<T>(string buffer)
         {
             if (buffer.Length == 2 && typeof(T) == typeof(EdgeCycleModel))

@@ -87,6 +87,20 @@ namespace BLDAPI.Controllers
                 Message = "Invalid query. Use no parameters, buffer only, or buffer + first + second."
             });
         }
+        [HttpGet("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var algorithm = await _algorithmData.LoadAlgorithmById<CornerCycleModel>(id);
+
+            if (algorithm == null)
+            {
+                return NotFound(new { Message = "Algorithm not found" });
+            }
+
+            return Ok(algorithm);
+        }
 
 
         [HttpPost]
