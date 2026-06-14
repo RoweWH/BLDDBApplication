@@ -1,12 +1,11 @@
 ﻿using BLDAPI.Validation;
 using DataLibrary.Data;
 using DataLibrary.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BLDAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/corners")]
     [ApiController]
     public class CornersController : ControllerBase
     {
@@ -17,19 +16,11 @@ namespace BLDAPI.Controllers
             _algorithmData = algorithmData;
         }
 
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get(
-        [FromQuery] string? buffer,
-        [FromQuery] string? first,
-        [FromQuery] string? second)
+        [HttpGet("cases")]
+        public async Task<IActionResult> GetCases(
+            [FromQuery] string? buffer,
+            [FromQuery] string? first,
+            [FromQuery] string? second)
         {
             bool hasBuffer = !string.IsNullOrWhiteSpace(buffer);
             bool hasFirst = !string.IsNullOrWhiteSpace(first);
@@ -45,7 +36,7 @@ namespace BLDAPI.Controllers
 
                 foreach (var c in cornerCases)
                 {
-                    c.Algorithms = await _algorithmData.LoadAlgorithms<CornerCycleModel>(c);
+                    c.Algorithms = await _algorithmData.LoadAlgorithms(c);
                 }
 
                 return Ok(cornerCases);
@@ -77,7 +68,7 @@ namespace BLDAPI.Controllers
                     return BadRequest(new { Message = "Invalid corner case request" });
                 }
 
-                cornerCase.Algorithms = await _algorithmData.LoadAlgorithms<CornerCycleModel>(cornerCase);
+                cornerCase.Algorithms = await _algorithmData.LoadAlgorithms(cornerCase);
 
                 return Ok(cornerCase);
             }
@@ -87,12 +78,18 @@ namespace BLDAPI.Controllers
                 Message = "Invalid query. Use no parameters, buffer only, or buffer + first + second."
             });
         }
-        [HttpGet("{id:int}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById(int id)
+
+        [HttpGet("cases/{caseId:int}/algorithms")]
+        public async Task<IActionResult> GetAlgorithmsByCaseId(int caseId)
         {
-            var algorithm = await _algorithmData.LoadAlgorithmById<CornerCycleModel>(id);
+            var algorithms = await _algorithmData.LoadAlgorithmsByCaseId<CornerCycleModel>(caseId);
+            return Ok(algorithms);
+        }
+
+        [HttpGet("algorithms/{algorithmId:int}")]
+        public async Task<IActionResult> GetAlgorithmById(int algorithmId)
+        {
+            var algorithm = await _algorithmData.LoadAlgorithmById<CornerCycleModel>(algorithmId);
 
             if (algorithm == null)
             {
@@ -102,31 +99,40 @@ namespace BLDAPI.Controllers
             return Ok(algorithm);
         }
 
-
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Post(CornerCycleModel cornerCaseAndAlgorithm)
+        [HttpPost("algorithms")]
+        public async Task<IActionResult> PostAlgorithm(CornerCycleModel cornerCaseAndAlgorithm)
         {
-            if (InputValidation.IsValidCornerRequest(cornerCaseAndAlgorithm))
-            {
-                int id = await _algorithmData.InsertAlgByCase(cornerCaseAndAlgorithm);
-                if (id > 0)
-                {
-                    return Ok(new { Id = id });
-                }
-                else if (id == -1)
-                {
-                    return BadRequest(new { Message = "Algorithm already exists" });
-                }
-                else
-                    return BadRequest(new { Message = "Invalid Algorithm" });
-            }
-            else
+            if (!InputValidation.IsValidCornerRequest(cornerCaseAndAlgorithm))
             {
                 return BadRequest(new { Message = "Invalid corner case request" });
             }
+
+            int id = await _algorithmData.InsertAlgByCase(cornerCaseAndAlgorithm);
+
+            if (id > 0)
+            {
+                return Ok(new { Id = id });
+            }
+
+            if (id == -1)
+            {
+                return BadRequest(new { Message = "Algorithm already exists" });
+            }
+
+            return BadRequest(new { Message = "Invalid Algorithm" });
         }
-        
+
+        [HttpPost("algorithms/verify")]
+        public async Task<ActionResult<bool>> VerifyAlgorithm(CornerCycleModel cornerCaseAndAlgorithm)
+        {
+            if (!InputValidation.IsValidCornerRequest(cornerCaseAndAlgorithm))
+            {
+                return BadRequest(false);
+            }
+
+            bool valid = await _algorithmData.VerifyAlgorithm(cornerCaseAndAlgorithm);
+
+            return Ok(valid);
+        }
     }
 }

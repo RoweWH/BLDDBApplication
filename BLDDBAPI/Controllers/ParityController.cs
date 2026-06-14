@@ -1,12 +1,11 @@
 ﻿using BLDAPI.Validation;
 using DataLibrary.Data;
 using DataLibrary.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BLDAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/parity")]
     [ApiController]
     public class ParityController : ControllerBase
     {
@@ -17,16 +16,13 @@ namespace BLDAPI.Controllers
             _algorithmData = algorithmData;
         }
 
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get(
-        [FromQuery] string? firstEdge,
-        [FromQuery] string? secondEdge,
-        [FromQuery] string? firstCorner,
-        [FromQuery] string? secondCorner,
-        [FromQuery] string? twist)
+        [HttpGet("cases")]
+        public async Task<IActionResult> GetCases(
+            [FromQuery] string? firstEdge,
+            [FromQuery] string? secondEdge,
+            [FromQuery] string? firstCorner,
+            [FromQuery] string? secondCorner,
+            [FromQuery] string? twist)
         {
             bool noParams =
                 string.IsNullOrWhiteSpace(firstEdge) &&
@@ -38,11 +34,17 @@ namespace BLDAPI.Controllers
             if (noParams)
             {
                 var cases = await _algorithmData.LoadAll<ParityModel>();
-                foreach(var c in cases)
+
+                foreach (var c in cases)
                 {
-                    if (string.IsNullOrWhiteSpace(c.Twist)) c.Twist = null;
-                    c.Algorithms = await _algorithmData.LoadAlgorithms<ParityModel>(c);
+                    if (string.IsNullOrWhiteSpace(c.Twist))
+                    {
+                        c.Twist = null;
+                    }
+
+                    c.Algorithms = await _algorithmData.LoadAlgorithms(c);
                 }
+
                 return Ok(cases);
             }
 
@@ -56,28 +58,40 @@ namespace BLDAPI.Controllers
                 return BadRequest(new { Message = "Missing required parity case parameters" });
             }
 
-            ParityModel parityCase = new ParityModel(
-                firstEdge,
-                secondEdge,
-                firstCorner,
-                secondCorner,
+            var parityCase = new ParityModel(
+                firstEdge!,
+                secondEdge!,
+                firstCorner!,
+                secondCorner!,
                 twist
             );
 
-            if (InputValidation.IsValidParityRequest(parityCase))
+            if (!InputValidation.IsValidParityRequest(parityCase))
             {
-                parityCase.Algorithms = await _algorithmData.LoadAlgorithms<ParityModel>(parityCase);
-                return Ok(parityCase);
+                return BadRequest(new { Message = "Invalid parity case request" });
             }
 
-            return BadRequest(new { Message = "Invalid parity case request" });
+            parityCase.Algorithms = await _algorithmData.LoadAlgorithms(parityCase);
+
+            if (string.IsNullOrWhiteSpace(parityCase.Twist))
+            {
+                parityCase.Twist = null;
+            }
+
+            return Ok(parityCase);
         }
-        [HttpGet("{id:int}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById(int id)
+
+        [HttpGet("cases/{caseId:int}/algorithms")]
+        public async Task<IActionResult> GetAlgorithmsByCaseId(int caseId)
         {
-            var algorithm = await _algorithmData.LoadAlgorithmById<ParityModel>(id);
+            var algorithms = await _algorithmData.LoadAlgorithmsByCaseId<ParityModel>(caseId);
+            return Ok(algorithms);
+        }
+
+        [HttpGet("algorithms/{algorithmId:int}")]
+        public async Task<IActionResult> GetAlgorithmById(int algorithmId)
+        {
+            var algorithm = await _algorithmData.LoadAlgorithmById<ParityModel>(algorithmId);
 
             if (algorithm == null)
             {
@@ -87,29 +101,40 @@ namespace BLDAPI.Controllers
             return Ok(algorithm);
         }
 
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Post(ParityModel parityCaseAndAlgorithm)
+        [HttpPost("algorithms")]
+        public async Task<IActionResult> PostAlgorithm(ParityModel parityCaseAndAlgorithm)
         {
-            if (InputValidation.IsValidParityRequest(parityCaseAndAlgorithm))
-            {
-                int id = await _algorithmData.InsertAlgByCase(parityCaseAndAlgorithm);
-                if (id > 0)
-                {
-                    return Ok(new { Id = id });
-                }
-                else if (id == -1)
-                {
-                    return BadRequest(new { Message = "Algorithm already exists" });
-                }
-                else
-                    return BadRequest(new { Message = "Invalid Algorithm" });
-            }
-            else
+            if (!InputValidation.IsValidParityRequest(parityCaseAndAlgorithm))
             {
                 return BadRequest(new { Message = "Invalid parity case request" });
             }
+
+            int id = await _algorithmData.InsertAlgByCase(parityCaseAndAlgorithm);
+
+            if (id > 0)
+            {
+                return Ok(new { Id = id });
+            }
+
+            if (id == -1)
+            {
+                return BadRequest(new { Message = "Algorithm already exists" });
+            }
+
+            return BadRequest(new { Message = "Invalid Algorithm" });
+        }
+
+        [HttpPost("algorithms/verify")]
+        public async Task<ActionResult<bool>> VerifyAlgorithm(ParityModel parityCaseAndAlgorithm)
+        {
+            if (!InputValidation.IsValidParityRequest(parityCaseAndAlgorithm))
+            {
+                return BadRequest(false);
+            }
+
+            bool valid = await _algorithmData.VerifyAlgorithm(parityCaseAndAlgorithm);
+
+            return Ok(valid);
         }
     }
 }

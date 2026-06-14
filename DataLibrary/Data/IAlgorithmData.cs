@@ -15,5 +15,7 @@ namespace DataLibrary.Data
         Task<List<AlgorithmModel>> LoadAlgorithms<T>(T caseToLoad) where T : CaseModel;
         Task<List<T>> LoadAll<T>() where T : CaseModel;
         Task<List<T>> LoadCasesByBuffer<T>(string buffer);
+        Task<bool> VerifyAlgorithm(CaseModel caseAndAlgorithm);
+        Task<List<AlgorithmModel>> LoadAlgorithmsByCaseId<T>(int caseId) where T : CaseModel;
     }
 }

@@ -1,12 +1,11 @@
 ﻿using BLDAPI.Validation;
 using DataLibrary.Data;
 using DataLibrary.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BLDAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/edges")]
     [ApiController]
     public class EdgesController : ControllerBase
     {
@@ -17,14 +16,11 @@ namespace BLDAPI.Controllers
             _algorithmData = algorithmData;
         }
 
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get(
-       [FromQuery] string? buffer,
-       [FromQuery] string? first,
-       [FromQuery] string? second)
+        [HttpGet("cases")]
+        public async Task<IActionResult> GetCases(
+            [FromQuery] string? buffer,
+            [FromQuery] string? first,
+            [FromQuery] string? second)
         {
             bool hasBuffer = !string.IsNullOrWhiteSpace(buffer);
             bool hasFirst = !string.IsNullOrWhiteSpace(first);
@@ -57,7 +53,7 @@ namespace BLDAPI.Controllers
 
                 foreach (var c in edgeCases)
                 {
-                    c.Algorithms = await _algorithmData.LoadAlgorithms<EdgeCycleModel>(c);
+                    c.Algorithms = await _algorithmData.LoadAlgorithms(c);
                 }
 
                 return Ok(edgeCases);
@@ -72,7 +68,7 @@ namespace BLDAPI.Controllers
                     return BadRequest(new { Message = "Invalid edge case request" });
                 }
 
-                edgeCase.Algorithms = await _algorithmData.LoadAlgorithms<EdgeCycleModel>(edgeCase);
+                edgeCase.Algorithms = await _algorithmData.LoadAlgorithms(edgeCase);
 
                 return Ok(edgeCase);
             }
@@ -83,12 +79,17 @@ namespace BLDAPI.Controllers
             });
         }
 
-        [HttpGet("{id:int}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById(int id)
+        [HttpGet("cases/{caseId:int}/algorithms")]
+        public async Task<IActionResult> GetAlgorithmsByCaseId(int caseId)
         {
-            var algorithm = await _algorithmData.LoadAlgorithmById<EdgeCycleModel>(id);
+            var algorithms = await _algorithmData.LoadAlgorithmsByCaseId<EdgeCycleModel>(caseId);
+            return Ok(algorithms);
+        }
+
+        [HttpGet("algorithms/{algorithmId:int}")]
+        public async Task<IActionResult> GetAlgorithmById(int algorithmId)
+        {
+            var algorithm = await _algorithmData.LoadAlgorithmById<EdgeCycleModel>(algorithmId);
 
             if (algorithm == null)
             {
@@ -98,29 +99,40 @@ namespace BLDAPI.Controllers
             return Ok(algorithm);
         }
 
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Post(EdgeCycleModel edgeCaseAndAlgorithm)
+        [HttpPost("algorithms")]
+        public async Task<IActionResult> PostAlgorithm(EdgeCycleModel edgeCaseAndAlgorithm)
         {
-            if (InputValidation.IsValidEdgeRequest(edgeCaseAndAlgorithm))
-            {
-                int id = await _algorithmData.InsertAlgByCase(edgeCaseAndAlgorithm);
-                if (id > 0)
-                {
-                    return Ok(new { Id = id });
-                }
-                else if (id == -1)
-                {
-                    return BadRequest(new { Message = "Algorithm already exists" });
-                }
-                else
-                    return BadRequest(new { Message = "Invalid Algorithm" });
-            }
-            else
+            if (!InputValidation.IsValidEdgeRequest(edgeCaseAndAlgorithm))
             {
                 return BadRequest(new { Message = "Invalid edge case request" });
             }
+
+            int id = await _algorithmData.InsertAlgByCase(edgeCaseAndAlgorithm);
+
+            if (id > 0)
+            {
+                return Ok(new { Id = id });
+            }
+
+            if (id == -1)
+            {
+                return BadRequest(new { Message = "Algorithm already exists" });
+            }
+
+            return BadRequest(new { Message = "Invalid Algorithm" });
+        }
+
+        [HttpPost("algorithms/verify")]
+        public async Task<ActionResult<bool>> VerifyAlgorithm(EdgeCycleModel edgeCaseAndAlgorithm)
+        {
+            if (!InputValidation.IsValidEdgeRequest(edgeCaseAndAlgorithm))
+            {
+                return BadRequest(false);
+            }
+
+            bool valid = await _algorithmData.VerifyAlgorithm(edgeCaseAndAlgorithm);
+
+            return Ok(valid);
         }
     }
 }

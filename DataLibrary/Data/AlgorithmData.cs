@@ -371,8 +371,44 @@ namespace DataLibrary.Data
             }
 
         }
-
-
+        public async Task<bool> VerifyAlgorithm(CaseModel caseAndAlgorithm)
+        {
+            switch (caseAndAlgorithm)
+            {
+                case EdgeCycleModel edgeCase:
+                    {
+                        EdgeCycleModel givenCase = (EdgeCycleModel)await CorrectCase(edgeCase);
+                        var foundCase = await CorrectCase(CubeLogic.FindCase(edgeCase.Algorithms[0].Algorithm));
+                        if (foundCase is EdgeCycleModel && givenCase.Equals((EdgeCycleModel)foundCase))
+                        {
+                            return true;
+                        }
+                        else return false;
+                    }
+                case CornerCycleModel cornerCase:
+                    {
+                        CornerCycleModel givenCase = (CornerCycleModel)await CorrectCase(cornerCase);
+                        var foundCase = await CorrectCase(CubeLogic.FindCase(cornerCase.Algorithms[0].Algorithm));
+                        if (foundCase is CornerCycleModel && givenCase.Equals((CornerCycleModel)foundCase))
+                        {
+                            return true;
+                        }
+                        else return false;
+                    }
+                case ParityModel parityCase:
+                    {
+                        ParityModel givenCase = (ParityModel)await CorrectCase(parityCase);
+                        var foundCase = await CorrectCase(CubeLogic.FindCase(parityCase.Algorithms[0].Algorithm));
+                        if (foundCase is ParityModel && givenCase.Equals((ParityModel)foundCase))
+                        {
+                            return true;
+                        }
+                        else return false;
+                    }
+                default:
+                    return false;
+            }
+        }
         public async Task<int> InsertAlgByCase(CaseModel caseAndAlgorithm)
         {
             switch (caseAndAlgorithm)
@@ -505,6 +541,41 @@ namespace DataLibrary.Data
                     return 0;
             }
 
+        }
+
+        public async Task<List<AlgorithmModel>> LoadAlgorithmsByCaseId<T>(int caseId) where T : CaseModel
+        {
+            if (caseId <= 0)
+                return new List<AlgorithmModel>();
+
+            if (typeof(T) == typeof(EdgeCycleModel))
+            {
+                return await _dataAccess.LoadData<AlgorithmModel, dynamic>(
+                    "dbo.spEdgeAlgorithms_GetByCycleId",
+                    new { Id = caseId },
+                    _connectionString.SqlConnectionName
+                );
+            }
+
+            if (typeof(T) == typeof(CornerCycleModel))
+            {
+                return await _dataAccess.LoadData<AlgorithmModel, dynamic>(
+                    "dbo.spCornerAlgorithms_GetByCycleId",
+                    new { Id = caseId },
+                    _connectionString.SqlConnectionName
+                );
+            }
+
+            if (typeof(T) == typeof(ParityModel))
+            {
+                return await _dataAccess.LoadData<AlgorithmModel, dynamic>(
+                    "dbo.spParityAlgorithms_GetByCaseId",
+                    new { Id = caseId },
+                    _connectionString.SqlConnectionName
+                );
+            }
+
+            return new List<AlgorithmModel>();
         }
 
     }
