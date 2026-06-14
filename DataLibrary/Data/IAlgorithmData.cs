@@ -7,15 +7,16 @@ namespace DataLibrary.Data
         Task<int> AddNewCase(CaseModel newCase);
         Task<T> CorrectCase<T>(T caseToFix) where T : CaseModel;
         Task<int> DeleteAlg(AlgorithmModel algorithm);
+        Task<CaseModel?> GetCase(CaseModel caseModel);
         Task<int> GetCaseId<T>(T caseModel) where T : CaseModel;
         Task<int> InsertAlg(string newAlgorithm);
         Task<int> InsertAlgByCase(CaseModel caseAndAlgorithm);
         Task<bool> IsDuplicateAlgorithm(string newAlgorithm, CaseModel caseToLoad);
         Task<string?> LoadAlgorithmById<T>(int id) where T : CaseModel;
         Task<List<AlgorithmModel>> LoadAlgorithms<T>(T caseToLoad) where T : CaseModel;
+        Task<List<AlgorithmModel>> LoadAlgorithmsByCaseId<T>(int caseId) where T : CaseModel;
         Task<List<T>> LoadAll<T>() where T : CaseModel;
         Task<List<T>> LoadCasesByBuffer<T>(string buffer);
         Task<bool> VerifyAlgorithm(CaseModel caseAndAlgorithm);
-        Task<List<AlgorithmModel>> LoadAlgorithmsByCaseId<T>(int caseId) where T : CaseModel;
     }
 }

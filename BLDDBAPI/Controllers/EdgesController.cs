@@ -125,14 +125,29 @@ namespace BLDAPI.Controllers
         [HttpPost("algorithms/verify")]
         public async Task<ActionResult<bool>> VerifyAlgorithm(EdgeCycleModel edgeCaseAndAlgorithm)
         {
-            if (!InputValidation.IsValidEdgeRequest(edgeCaseAndAlgorithm))
+            if (edgeCaseAndAlgorithm == null ||
+                edgeCaseAndAlgorithm.Id <= 0 ||
+                edgeCaseAndAlgorithm.Algorithms == null ||
+                edgeCaseAndAlgorithm.Algorithms.Count == 0 ||
+                string.IsNullOrWhiteSpace(edgeCaseAndAlgorithm.Algorithms[0].Algorithm))
             {
                 return BadRequest(false);
             }
 
-            bool valid = await _algorithmData.VerifyAlgorithm(edgeCaseAndAlgorithm);
+            CaseModel? caseFromDb = await _algorithmData.GetCase(edgeCaseAndAlgorithm);
+
+            if (caseFromDb is not EdgeCycleModel populatedEdgeCase)
+            {
+                return NotFound(false);
+            }
+
+            populatedEdgeCase.Algorithms = edgeCaseAndAlgorithm.Algorithms;
+
+            bool valid = await _algorithmData.VerifyAlgorithm(populatedEdgeCase);
 
             return Ok(valid);
         }
+
+
     }
 }

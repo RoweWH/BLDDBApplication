@@ -127,12 +127,25 @@ namespace BLDAPI.Controllers
         [HttpPost("algorithms/verify")]
         public async Task<ActionResult<bool>> VerifyAlgorithm(ParityModel parityCaseAndAlgorithm)
         {
-            if (!InputValidation.IsValidParityRequest(parityCaseAndAlgorithm))
+            if (parityCaseAndAlgorithm == null ||
+                parityCaseAndAlgorithm.Id <= 0 ||
+                parityCaseAndAlgorithm.Algorithms == null ||
+                parityCaseAndAlgorithm.Algorithms.Count == 0 ||
+                string.IsNullOrWhiteSpace(parityCaseAndAlgorithm.Algorithms[0].Algorithm))
             {
                 return BadRequest(false);
             }
 
-            bool valid = await _algorithmData.VerifyAlgorithm(parityCaseAndAlgorithm);
+            CaseModel? caseFromDb = await _algorithmData.GetCase(parityCaseAndAlgorithm);
+
+            if (caseFromDb is not ParityModel populatedParityCase)
+            {
+                return NotFound(false);
+            }
+
+            populatedParityCase.Algorithms = parityCaseAndAlgorithm.Algorithms;
+
+            bool valid = await _algorithmData.VerifyAlgorithm(populatedParityCase);
 
             return Ok(valid);
         }

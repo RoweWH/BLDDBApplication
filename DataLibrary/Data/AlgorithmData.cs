@@ -2,6 +2,7 @@
 using DataLibrary.Data.CubeLibrary;
 using DataLibrary.Db;
 using DataLibrary.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.Identity.Client;
 using System;
 using System.Collections;
@@ -24,6 +25,53 @@ namespace DataLibrary.Data
         {
             _dataAccess = dataAccess;
             _connectionString = connectionString;
+        }
+
+        public async Task<CaseModel?> GetCase(CaseModel caseModel)
+        {
+            if (caseModel == null || caseModel.Id <= 0)
+            {
+                return null;
+            }
+
+            switch (caseModel)
+            {
+                case EdgeCycleModel edgeCase:
+                    {
+                        var cases = await _dataAccess.LoadData<EdgeCycleModel, dynamic>(
+                            "dbo.spEdgeCases_GetCaseById",
+                            new { Id = edgeCase.Id },
+                            _connectionString.SqlConnectionName
+                        );
+
+                        return cases.FirstOrDefault();
+                    }
+
+                case CornerCycleModel cornerCase:
+                    {
+                        var cases = await _dataAccess.LoadData<CornerCycleModel, dynamic>(
+                            "dbo.spCornerCases_GetCaseById",
+                            new { Id = cornerCase.Id },
+                            _connectionString.SqlConnectionName
+                        );
+
+                        return cases.FirstOrDefault();
+                    }
+
+                case ParityModel parityCase:
+                    {
+                        var cases = await _dataAccess.LoadData<ParityModel, dynamic>(
+                            "dbo.spParityCases_GetCaseById",
+                            new { Id = parityCase.Id },
+                            _connectionString.SqlConnectionName
+                        );
+
+                        return cases.FirstOrDefault();
+                    }
+
+                default:
+                    return null;
+            }
         }
 
         public async Task<int> GetCaseId<T>(T caseModel) where T : CaseModel
@@ -371,44 +419,6 @@ namespace DataLibrary.Data
             }
 
         }
-        public async Task<bool> VerifyAlgorithm(CaseModel caseAndAlgorithm)
-        {
-            switch (caseAndAlgorithm)
-            {
-                case EdgeCycleModel edgeCase:
-                    {
-                        EdgeCycleModel givenCase = (EdgeCycleModel)await CorrectCase(edgeCase);
-                        var foundCase = await CorrectCase(CubeLogic.FindCase(edgeCase.Algorithms[0].Algorithm));
-                        if (foundCase is EdgeCycleModel && givenCase.Equals((EdgeCycleModel)foundCase))
-                        {
-                            return true;
-                        }
-                        else return false;
-                    }
-                case CornerCycleModel cornerCase:
-                    {
-                        CornerCycleModel givenCase = (CornerCycleModel)await CorrectCase(cornerCase);
-                        var foundCase = await CorrectCase(CubeLogic.FindCase(cornerCase.Algorithms[0].Algorithm));
-                        if (foundCase is CornerCycleModel && givenCase.Equals((CornerCycleModel)foundCase))
-                        {
-                            return true;
-                        }
-                        else return false;
-                    }
-                case ParityModel parityCase:
-                    {
-                        ParityModel givenCase = (ParityModel)await CorrectCase(parityCase);
-                        var foundCase = await CorrectCase(CubeLogic.FindCase(parityCase.Algorithms[0].Algorithm));
-                        if (foundCase is ParityModel && givenCase.Equals((ParityModel)foundCase))
-                        {
-                            return true;
-                        }
-                        else return false;
-                    }
-                default:
-                    return false;
-            }
-        }
         public async Task<int> InsertAlgByCase(CaseModel caseAndAlgorithm)
         {
             switch (caseAndAlgorithm)
@@ -576,6 +586,46 @@ namespace DataLibrary.Data
             }
 
             return new List<AlgorithmModel>();
+        }
+
+        public async Task<bool> VerifyAlgorithm(CaseModel caseAndAlgorithm)
+        {
+            if (caseAndAlgorithm == null ||
+                caseAndAlgorithm.Algorithms == null ||
+                caseAndAlgorithm.Algorithms.Count == 0 ||
+                string.IsNullOrWhiteSpace(caseAndAlgorithm.Algorithms[0].Algorithm))
+            {
+                return false;
+            }
+
+            string algorithm = caseAndAlgorithm.Algorithms[0].Algorithm;
+
+            CaseModel? foundCase = CubeLogic.FindCase(algorithm);
+
+            if (foundCase == null)
+            {
+                return false;
+            }
+
+            foundCase = await CorrectCase(foundCase);
+
+            switch (caseAndAlgorithm)
+            {
+                case EdgeCycleModel edgeCase:
+                    return foundCase is EdgeCycleModel foundEdge &&
+                           edgeCase.Equals(foundEdge);
+
+                case CornerCycleModel cornerCase:
+                    return foundCase is CornerCycleModel foundCorner &&
+                           cornerCase.Equals(foundCorner);
+
+                case ParityModel parityCase:
+                    return foundCase is ParityModel foundParity &&
+                           parityCase.Equals(foundParity);
+
+                default:
+                    return false;
+            }
         }
 
     }

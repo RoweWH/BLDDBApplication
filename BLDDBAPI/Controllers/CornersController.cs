@@ -125,12 +125,25 @@ namespace BLDAPI.Controllers
         [HttpPost("algorithms/verify")]
         public async Task<ActionResult<bool>> VerifyAlgorithm(CornerCycleModel cornerCaseAndAlgorithm)
         {
-            if (!InputValidation.IsValidCornerRequest(cornerCaseAndAlgorithm))
+            if (cornerCaseAndAlgorithm == null ||
+                cornerCaseAndAlgorithm.Id <= 0 ||
+                cornerCaseAndAlgorithm.Algorithms == null ||
+                cornerCaseAndAlgorithm.Algorithms.Count == 0 ||
+                string.IsNullOrWhiteSpace(cornerCaseAndAlgorithm.Algorithms[0].Algorithm))
             {
                 return BadRequest(false);
             }
 
-            bool valid = await _algorithmData.VerifyAlgorithm(cornerCaseAndAlgorithm);
+            CaseModel? caseFromDb = await _algorithmData.GetCase(cornerCaseAndAlgorithm);
+
+            if (caseFromDb is not CornerCycleModel populatedCornerCase)
+            {
+                return NotFound(false);
+            }
+
+            populatedCornerCase.Algorithms = cornerCaseAndAlgorithm.Algorithms;
+
+            bool valid = await _algorithmData.VerifyAlgorithm(populatedCornerCase);
 
             return Ok(valid);
         }
