@@ -42,13 +42,14 @@ This API organizes algorithms by case type, validates correctness, prevents dupl
 ### 📤 Fetch Algorithms
 
 #### Edges & Corners
-- Get **all algorithms**
-- Get algorithms by **buffer**
-- Get algorithms for a **specific case**
+- Get **all algorithms** (rowewh.com/api/Edges)
+- Get algorithms by **buffer** (rowewh.com/api/Edges?buffer=UF)
+- Get algorithms for a **specific case** (rowewh.com/api/Edges?buffer=UF&first=UR&second=UL)
 
 #### Parity
-- Get **all algorithms**
-- Get algorithms for a **specific case**
+- Get **all algorithms** (rowewh.com/api/Parity)
+- Get algorithms for a **specific 2E2C case** (rowewh.com/api/Parity?firstEdge=UF&secondEdge=UR&firstCorner=UFR&secondCorner=UBR)
+- Get algorithms for a **specific LTCT or T2C case** (rowewh.com/api/Parity?firstEdge=UF&secondEdge=UR&firstCorner=UFR&secondCorner=UBR&twist=LDB)
 
 ---
 
