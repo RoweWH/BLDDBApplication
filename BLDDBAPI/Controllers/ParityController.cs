@@ -102,14 +102,40 @@ namespace BLDAPI.Controllers
         }
 
         [HttpPost("algorithms")]
-        public async Task<IActionResult> PostAlgorithm(ParityModel parityCaseAndAlgorithm)
+        public async Task<IActionResult> PostAlgorithm(ParityModel request)
         {
-            if (!InputValidation.IsValidParityRequest(parityCaseAndAlgorithm))
+            if (request == null ||
+                request.Algorithms == null ||
+                request.Algorithms.Count == 0 ||
+                string.IsNullOrWhiteSpace(request.Algorithms[0].Algorithm))
             {
-                return BadRequest(new { Message = "Invalid parity case request" });
+                return BadRequest(new { Message = "Algorithm is required" });
             }
 
-            int id = await _algorithmData.InsertAlgByCase(parityCaseAndAlgorithm);
+            CaseModel? caseToUse = null;
+
+            if (request.Id > 0)
+            {
+                caseToUse = await _algorithmData.GetCase(request);
+
+                if (caseToUse == null)
+                {
+                    return NotFound(new { Message = "Case not found" });
+                }
+
+                caseToUse.Algorithms = request.Algorithms;
+            }
+            else
+            {
+                if (!InputValidation.IsValidParityRequest(request))
+                {
+                    return BadRequest(new { Message = "Invalid parity case request" });
+                }
+
+                caseToUse = request;
+            }
+
+            int id = await _algorithmData.InsertAlgByCase(caseToUse);
 
             if (id > 0)
             {

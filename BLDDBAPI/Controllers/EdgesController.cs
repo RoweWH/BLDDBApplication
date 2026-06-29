@@ -100,14 +100,40 @@ namespace BLDAPI.Controllers
         }
 
         [HttpPost("algorithms")]
-        public async Task<IActionResult> PostAlgorithm(EdgeCycleModel edgeCaseAndAlgorithm)
+        public async Task<IActionResult> PostAlgorithm(EdgeCycleModel request)
         {
-            if (!InputValidation.IsValidEdgeRequest(edgeCaseAndAlgorithm))
+            if (request == null ||
+                request.Algorithms == null ||
+                request.Algorithms.Count == 0 ||
+                string.IsNullOrWhiteSpace(request.Algorithms[0].Algorithm))
             {
-                return BadRequest(new { Message = "Invalid edge case request" });
+                return BadRequest(new { Message = "Algorithm is required" });
             }
 
-            int id = await _algorithmData.InsertAlgByCase(edgeCaseAndAlgorithm);
+            CaseModel? caseToUse = null;
+
+            if (request.Id > 0)
+            {
+                caseToUse = await _algorithmData.GetCase(request);
+
+                if (caseToUse == null)
+                {
+                    return NotFound(new { Message = "Case not found" });
+                }
+
+                caseToUse.Algorithms = request.Algorithms;
+            }
+            else
+            {
+                if (!InputValidation.IsValidEdgeRequest(request))
+                {
+                    return BadRequest(new { Message = "Invalid edge case request" });
+                }
+
+                caseToUse = request;
+            }
+
+            int id = await _algorithmData.InsertAlgByCase(caseToUse);
 
             if (id > 0)
             {
